@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: whitesmoke;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: #64748b;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .container {
+            background: lightskyblue;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        /* โซนเลือกกรอบรูป */
+        .frame-selector {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .frame-option {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #cbd5e1;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 2px;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+        }
+
+        .frame-option:hover {
+            border-color: #0ea5e9;
+        }
+
+        .frame-option.active {
+            border-color: #4f46e5;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+        }
+
+        /* โซนปรับแต่งรูปภาพ (Sliders) */
+        .sliders-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        /* ⭐️ จุดที่แก้ไข: ปรับให้เนื้อหาภายในแถวจัดวางขนานกันในบรรทัดเดียว */
+        .slider-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px; /* เพิ่มระยะห่างระหว่างตัวหนังสือกับแถบสไลเดอร์ */
+        }
+
+        .slider-control:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ⭐️ จุดที่แก้ไข: ล็อกความกว้างข้อความและสั่งห้ามตัวหนังสือตัดขึ้นบรรทัดใหม่ */
+        .slider-control label {
+            width: 115px; /* ปรับความกว้างให้รองรับตัวอักษรได้พอดี */
+            font-size: 14px;
+            font-weight: bold;
+            color: #960707;
+            white-space: nowrap; /* 🔥 ป้องกันข้อความเด้งตกบรรทัด */
+            display: inline-flex;
+            align-items: center;
+        }
+
+        /* ⭐️ จุดที่แก้ไข: ปรับให้แถบยืดหยุ่นเต็มพื้นที่ที่เหลือ */
+        .slider-control input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            min-width: 0; /* ช่วยป้องกันแถบล้นในหน้าจอมือถือ */
+        }
+
+        /* ปุ่มต่างๆ */
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: #4338ca;
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-label {
+            display: inline-block;
+            background-color: #0ea5e9;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: background 0.2s;
+        }
+
+        .upload-label:hover {
+            background-color: #0284c7;
+        }
+
+        /* Canvas พื้นที่แสดงผล */
+        .canvas-container {
+            margin: 20px auto;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 400px;
+            height: 400px;
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📸 โปรแกรมใส่กรอบรูปอัจฉริยะ</h1>
+        <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
+        <h3>1. เลือกสไตล์กรอบรูป</h3>
+        <div class="frame-selector">
+            <img src="img/frame.png" class="frame-option active" onclick="changeFrame('img/frame.png', this)" alt="กรอบที่ 1">
+            <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
+        </div>
+
+        <div class="control-group">
+            <label for="imageLoader" class="upload-label">2. เลือกรูปภาพของคุณ</label>
+            <input type="file" id="imageLoader" accept="image/*">
+        </div>
+
+        <div class="canvas-container">
+            <canvas id="imageCanvas" width="800" height="800"></canvas>
+        </div>
+
+        <div class="sliders-box">
+            <div class="slider-control">
+                <label>🔍 ซูมรูปภาพ:</label>
+                <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" disabled>
+            </div>
+            <div class="slider-control">
+                <label>↔️ ขยับซ้าย-ขวา:</label>
+                <input type="range" id="offsetXSlider" min="-400" max="400" step="1" value="0" disabled>
+            </div>
+            <div class="slider-control">
+                <label>↕️ ขยับขึ้น-ลง:</label>
+                <input type="range" id="offsetYSlider" min="-400" max="400" step="1" value="0" disabled>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <button id="downloadBtn" class="btn" disabled>ดาวน์โหลดรูปภาพที่แต่งเสร็จแล้ว</button>
+        </div>
+    </div>
+
+    <script>
+        const imageLoader = document.getElementById('imageLoader');
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        
+        const zoomSlider = document.getElementById('zoomSlider');
+        const offsetXSlider = document.getElementById('offsetXSlider');
+        const offsetYSlider = document.getElementById('offsetYSlider');
+
+        let userImage = new Image();
+        let frameImage = new Image();
+        let hasUserImage = false;
+
+        let imgScale = 1;
+        let imgOffsetX = 0;
+        let imgOffsetY = 0;
+
+        frameImage.src = 'img/frame.png';
+        frameImage.onload = function() {
+            drawCanvasPlaceholder();
+        };
+
+        function drawCanvasPlaceholder() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#e2e8f0";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (hasUserImage) {
+                renderCombinedImage();
+            } else {
+                ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#64748b";
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("กรุณาเลือกรูปภาพของคุณในขั้นตอนที่ 2", canvas.width / 2, canvas.height / 2 + 50);
+            }
+        }
+
+        function changeFrame(frameSrc, element) {
+            frameImage.src = frameSrc;
+            document.querySelectorAll('.frame-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            frameImage.onload = function() {
+                if(hasUserImage) {
+                    renderCombinedImage();
+                } else {
+                    drawCanvasPlaceholder();
+                }
+            };
+        }
+
+        imageLoader.addEventListener('change', handleImage, false);
+
+        function handleImage(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                userImage.onload = function() {
+                    hasUserImage = true;
+                    
+                    let baseScale = Math.max(canvas.width / userImage.width, canvas.height / userImage.height);
+                    zoomSlider.value = baseScale;
+                    imgScale = baseScale;
+                    
+                    offsetXSlider.value = 0;
+                    offsetYSlider.value = 0;
+                    imgOffsetX = 0;
+                    imgOffsetY = 0;
+
+                    zoomSlider.disabled = false;
+                    offsetXSlider.disabled = false;
+                    offsetYSlider.disabled = false;
+                    downloadBtn.disabled = false;
+
+                    renderCombinedImage();
+                }
+                userImage.src = event.target.result;
+            }
+            if(e.target.files[0]) {
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+
+        function renderCombinedImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            let baseWidth = userImage.width * imgScale;
+            let baseHeight = userImage.height * imgScale;
+            
+            let x = (canvas.width / 2) - (baseWidth / 2) + imgOffsetX;
+            let y = (canvas.height / 2) - (baseHeight / 2) + imgOffsetY;
+            
+            ctx.drawImage(userImage, x, y, baseWidth, baseHeight);
+            ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+        }
+
+        zoomSlider.addEventListener('input', function() {
+            imgScale = parseFloat(this.value);
+            renderCombinedImage();
+        });
+
+        offsetXSlider.addEventListener('input', function() {
+            imgOffsetX = parseInt(this.value);
+            renderCombinedImage();
+        });
+
+        offsetYSlider.addEventListener('input', function() {
+            imgOffsetY = parseInt(this.value);
+            renderCombinedImage();
+        });
+
+        downloadBtn.addEventListener('click', function() {
+            const imageURI = canvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = 'custom-framed-image.png';
+            link.href = imageURI;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    </script>
+</body>
+</html>
