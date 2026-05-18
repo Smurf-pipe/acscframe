@@ -15,13 +15,13 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 15px; /* ปรับลด padding ให้เข้ากับหน้าจอมือถือ */
+            padding: 15px;
         }
 
         h1 {
             color: #1e293b;
             margin-bottom: 5px;
-            font-size: 24px; /* ปรับขนาดฟอนต์ให้เหมาะกับมือถือ */
+            font-size: 24px;
         }
 
         p.subtitle {
@@ -33,7 +33,7 @@
 
         .container {
             background: lightskyblue;
-            padding: 20px; /* ปรับลดจาก 30px เพื่อไม่ให้ล้นจอมือถือ */
+            padding: 20px;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             text-align: center;
@@ -46,7 +46,6 @@
             margin-bottom: 20px;
         }
 
-        /* โซนเลือกกรอบรูป */
         .frame-selector {
             display: flex;
             justify-content: center;
@@ -74,7 +73,6 @@
             box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
         }
 
-        /* โซนปรับแต่งรูปภาพ (Sliders) */
         .sliders-box {
             background: #f8fafc;
             padding: 15px;
@@ -110,11 +108,10 @@
             min-width: 0;
         }
 
-        /* ปุ่มต่างๆ */
         .btn {
             background-color: #4f46e5;
             color: white;
-            padding: 14px 25px; /* ปรับให้ปุ่มหนาขึ้นเล็กน้อยเพื่อให้จิ้มง่ายบนมือถือ */
+            padding: 14px 25px;
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -152,7 +149,6 @@
             box-sizing: border-box;
         }
 
-        /* Canvas พื้นที่แสดงผล */
         .canvas-container {
             margin: 20px auto;
             border: 2px dashed #cbd5e1;
@@ -162,8 +158,8 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            max-width: 100%; /* ป้องกัน Canvas ล้นจอ */
-            aspect-ratio: 1 / 1; /* บังคับให้เป็นสี่เหลี่ยมจัตุรัสเสมอ */
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
         }
 
         canvas {
@@ -172,7 +168,6 @@
             display: block;
         }
 
-        /* ⭐️ จุดที่เพิ่มใหม่: Popup แสดงรูปภาพสำหรับมือถือ */
         .mobile-preview-overlay {
             display: none;
             position: fixed;
@@ -222,6 +217,8 @@
         <div class="frame-selector">
             <img src="img/frame.png" class="frame-option active" onclick="changeFrame('img/frame.png', this)" alt="กรอบที่ 1">
             <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
+            <img src="img/frameacsc1.png" class="frame-option" onclick="changeFrame('img/frameacsc1.png', this)" alt="กรอบที่ 3">
+            <img src="img/frameacsc2.png" class="frame-option" onclick="changeFrame('img/frameacsc2.png', this)" alt="กรอบที่ 4">
         </div>
 
         <div class="control-group">
@@ -281,6 +278,7 @@
         let imgScale = 1;
         let imgOffsetX = 0;
         let imgOffsetY = 0;
+        let currentBlobUrl = null; // เก็บตัวแปรเพื่อตามล้างหน่วยความจำ
 
         frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame.png';
@@ -379,30 +377,40 @@
             renderCombinedImage();
         });
 
-        // 🛠️ ปรับปรุงฟังก์ชันบันทึกรูป: ตรวจสอบว่าเป็น PC หรือมือถือ เพื่อการบันทึกภาพที่ปลอดภัยที่สุด
+        // 🛠️ จุดแก้ไขสำคัญสำหรับ Android: ใช้ HTML5 Blob ร่วมกับ URL Object เพื่อเสถียรภาพสูงสุด
         downloadBtn.addEventListener('click', function() {
             try {
-                const imageURI = canvas.toDataURL('image/png');
-                
-                // เช็กว่าเป็นอุปกรณ์พกพา หรือเปิดใน App Browser หรือไม่
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
-                if (isMobile) {
-                    // ถ้าเป็นมือถือ ให้โชว์หน้าต่างรูปภาพเพื่อให้กดค้างเซฟงานได้ปลอดภัย 100% (ป้องกัน Line/FB บล็อก)
-                    mobilePreviewImg.src = imageURI;
-                    previewOverlay.style.display = 'flex';
-                } else {
-                    // ถ้าเป็นคอมพิวเตอร์ทั่วไป ให้ดาวน์โหลดลงเครื่องทันทีตามปกติ
-                    const link = document.createElement('a');
-                    link.download = 'custom-framed-image.png';
-                    link.href = imageURI;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                }
+                canvas.toBlob(function(blob) {
+                    if (!blob) {
+                        alert("ไม่สามารถประมวลผลรูปภาพได้");
+                        return;
+                    }
+
+                    // ล้าง Blob URL เก่าเพื่อป้องกันหน่วยความจำเต็ม
+                    if (currentBlobUrl) {
+                        URL.revokeObjectURL(currentBlobUrl);
+                    }
+
+                    currentBlobUrl = URL.createObjectURL(blob);
+                    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                    
+                    if (isMobile) {
+                        // ป้อน Blob URL ไปที่รูปตัวอย่างและเปิดหน้าต่าง Popup ปลอดภัย 100%
+                        mobilePreviewImg.src = currentBlobUrl;
+                        previewOverlay.style.display = 'flex';
+                    } else {
+                        // ฝั่ง PC ดาวน์โหลดปกติ
+                        const link = document.createElement('a');
+                        link.download = 'custom-framed-image.png';
+                        link.href = currentBlobUrl;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }
+                }, 'image/png');
             } catch (error) {
                 console.error("Error generating image:", error);
-                alert("ไม่สามารถบันทึกภาพได้ตามปกติ กรุณาลองแคปหน้าจอแทนนะครับ");
+                alert("เกิดข้อผิดพลาด กรุณาลองแคปหน้าจอแทนนะครับ");
             }
         });
 
