@@ -5,6 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
     <style>
+        /* =======================================================
+           📦 จัดการให้โลโก้และข้อความอยู่ในบรรทัดเดียวกัน
+           ======================================================= */
+        .logo-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;          /* ระยะห่างระหว่างโลโก้กับตัว A */
+            margin-top: 10px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        /* ควบคุมขนาดโลโก้ด้านหน้าตัว A */
+        .header-logo {
+            height: 55px;        /* ปรับความสูงให้ไล่เลี่ยกับขนาดตัวอักษร h1 */
+            width: auto;         /* ให้ความกว้างปรับอัตโนมัติตามสัดส่วนรูปจริง รูปจะได้ไม่บี้ */
+            object-fit: contain;
+        }
+
+        /* ล้างค่า Margin เดิมของ h1 เพื่อไม่ให้เบียดกับโลโก้ */
+        .logo-header-container h1 {
+            margin: 0;
+            display: inline-block;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: whitesmoke;
@@ -20,7 +46,6 @@
 
         h1 {
             color: #1e293b;
-            margin-bottom: 5px;
             font-size: 24px;
         }
 
@@ -230,8 +255,13 @@
 <body>
 
     <div class="container">
-        <h1>📸 ACSC Photography</h1>
-        <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
+        <div class="logo-header-container">
+            <img src="img/acscc.png" alt="ACSC Logo" class="header-logo"> 
+            <h1>ACSC Picture Frame Styles</h1>                                     
+        </div>
+        
+
+         <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
         <h3>1. เลือกสไตล์กรอบรูป</h3>
         <div class="frame-selector">
             <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
@@ -302,7 +332,7 @@
         let currentBlobUrl = null;
 
         frameImage.crossOrigin = "anonymous";
-        frameImage.src = 'img/frame1.png'; // เปลี่ยนให้ดึงรูปแรกเริ่มตามสไตล์ของ active ตัวแรก
+        frameImage.src = 'img/frame1.png'; 
         frameImage.onload = function() {
             drawCanvasPlaceholder();
         };
