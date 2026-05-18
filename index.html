@@ -15,28 +15,31 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 15px; /* ปรับลด padding ให้เข้ากับหน้าจอมือถือ */
         }
 
         h1 {
             color: #1e293b;
             margin-bottom: 5px;
+            font-size: 24px; /* ปรับขนาดฟอนต์ให้เหมาะกับมือถือ */
         }
 
         p.subtitle {
             color: #64748b;
             margin-top: 0;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
+            font-size: 14px;
         }
 
         .container {
             background: lightskyblue;
-            padding: 30px;
+            padding: 20px; /* ปรับลดจาก 30px เพื่อไม่ให้ล้นจอมือถือ */
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             text-align: center;
             max-width: 550px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         .control-group {
@@ -80,41 +83,38 @@
             text-align: left;
         }
 
-        /* ⭐️ จุดที่แก้ไข: ปรับให้เนื้อหาภายในแถวจัดวางขนานกันในบรรทัดเดียว */
         .slider-control {
             display: flex;
             align-items: center;
             margin-bottom: 12px;
-            gap: 10px; /* เพิ่มระยะห่างระหว่างตัวหนังสือกับแถบสไลเดอร์ */
+            gap: 10px;
         }
 
         .slider-control:last-child {
             margin-bottom: 0;
         }
 
-        /* ⭐️ จุดที่แก้ไข: ล็อกความกว้างข้อความและสั่งห้ามตัวหนังสือตัดขึ้นบรรทัดใหม่ */
         .slider-control label {
-            width: 115px; /* ปรับความกว้างให้รองรับตัวอักษรได้พอดี */
-            font-size: 14px;
+            width: 110px;
+            font-size: 13px;
             font-weight: bold;
             color: #960707;
-            white-space: nowrap; /* 🔥 ป้องกันข้อความเด้งตกบรรทัด */
+            white-space: nowrap;
             display: inline-flex;
             align-items: center;
         }
 
-        /* ⭐️ จุดที่แก้ไข: ปรับให้แถบยืดหยุ่นเต็มพื้นที่ที่เหลือ */
         .slider-control input[type="range"] {
             flex: 1;
             cursor: pointer;
-            min-width: 0; /* ช่วยป้องกันแถบล้นในหน้าจอมือถือ */
+            min-width: 0;
         }
 
         /* ปุ่มต่างๆ */
         .btn {
             background-color: #4f46e5;
             color: white;
-            padding: 12px 25px;
+            padding: 14px 25px; /* ปรับให้ปุ่มหนาขึ้นเล็กน้อยเพื่อให้จิ้มง่ายบนมือถือ */
             border: none;
             border-radius: 10px;
             cursor: pointer;
@@ -122,6 +122,7 @@
             font-weight: bold;
             transition: background 0.2s;
             width: 100%;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:hover {
@@ -141,16 +142,14 @@
             display: inline-block;
             background-color: #0ea5e9;
             color: white;
-            padding: 10px 25px;
+            padding: 12px 25px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: bold;
             margin-bottom: 15px;
             transition: background 0.2s;
-        }
-
-        .upload-label:hover {
-            background-color: #0284c7;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* Canvas พื้นที่แสดงผล */
@@ -163,14 +162,54 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 400px;
-            height: 400px;
+            max-width: 100%; /* ป้องกัน Canvas ล้นจอ */
+            aspect-ratio: 1 / 1; /* บังคับให้เป็นสี่เหลี่ยมจัตุรัสเสมอ */
         }
 
         canvas {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100% !important;
+            height: 100% !important;
             display: block;
+        }
+
+        /* ⭐️ จุดที่เพิ่มใหม่: Popup แสดงรูปภาพสำหรับมือถือ */
+        .mobile-preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .mobile-preview-box {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+
+        .mobile-preview-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .mobile-preview-box p {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #e11d48;
+            font-size: 15px;
         }
     </style>
 </head>
@@ -210,7 +249,15 @@
         </div>
 
         <div class="control-group">
-            <button id="downloadBtn" class="btn" disabled>ดาวน์โหลดรูปภาพที่แต่งเสร็จแล้ว</button>
+            <button id="downloadBtn" class="btn" disabled>บันทึกรูปภาพที่แต่งเสร็จแล้ว</button>
+        </div>
+    </div>
+
+    <div id="previewOverlay" class="mobile-preview-overlay">
+        <div class="mobile-preview-box">
+            <p>👇 กดค้างที่รูปภาพด้านล่าง เพื่อบันทึกเข้าเครื่อง 👇</p>
+            <img id="mobilePreviewImg" src="" alt="Framed Preview">
+            <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
         </div>
     </div>
 
@@ -224,6 +271,9 @@
         const offsetXSlider = document.getElementById('offsetXSlider');
         const offsetYSlider = document.getElementById('offsetYSlider');
 
+        const previewOverlay = document.getElementById('previewOverlay');
+        const mobilePreviewImg = document.getElementById('mobilePreviewImg');
+
         let userImage = new Image();
         let frameImage = new Image();
         let hasUserImage = false;
@@ -232,6 +282,7 @@
         let imgOffsetX = 0;
         let imgOffsetY = 0;
 
+        frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame.png';
         frameImage.onload = function() {
             drawCanvasPlaceholder();
@@ -247,14 +298,16 @@
             } else {
                 ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
                 ctx.fillStyle = "#64748b";
-                ctx.font = "30px Arial";
+                ctx.font = "28px Arial";
                 ctx.textAlign = "center";
                 ctx.fillText("กรุณาเลือกรูปภาพของคุณในขั้นตอนที่ 2", canvas.width / 2, canvas.height / 2 + 50);
             }
         }
 
         function changeFrame(frameSrc, element) {
+            frameImage.crossOrigin = "anonymous";
             frameImage.src = frameSrc;
+            
             document.querySelectorAll('.frame-option').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
 
@@ -326,15 +379,36 @@
             renderCombinedImage();
         });
 
+        // 🛠️ ปรับปรุงฟังก์ชันบันทึกรูป: ตรวจสอบว่าเป็น PC หรือมือถือ เพื่อการบันทึกภาพที่ปลอดภัยที่สุด
         downloadBtn.addEventListener('click', function() {
-            const imageURI = canvas.toDataURL('image/png');
-            const link = document.createElement('a');
-            link.download = 'custom-framed-image.png';
-            link.href = imageURI;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            try {
+                const imageURI = canvas.toDataURL('image/png');
+                
+                // เช็กว่าเป็นอุปกรณ์พกพา หรือเปิดใน App Browser หรือไม่
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                if (isMobile) {
+                    // ถ้าเป็นมือถือ ให้โชว์หน้าต่างรูปภาพเพื่อให้กดค้างเซฟงานได้ปลอดภัย 100% (ป้องกัน Line/FB บล็อก)
+                    mobilePreviewImg.src = imageURI;
+                    previewOverlay.style.display = 'flex';
+                } else {
+                    // ถ้าเป็นคอมพิวเตอร์ทั่วไป ให้ดาวน์โหลดลงเครื่องทันทีตามปกติ
+                    const link = document.createElement('a');
+                    link.download = 'custom-framed-image.png';
+                    link.href = imageURI;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                }
+            } catch (error) {
+                console.error("Error generating image:", error);
+                alert("ไม่สามารถบันทึกภาพได้ตามปกติ กรุณาลองแคปหน้าจอแทนนะครับ");
+            }
         });
+
+        function closePreview() {
+            previewOverlay.style.display = 'none';
+        }
     </script>
 </body>
 </html>
