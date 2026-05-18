@@ -6,7 +6,7 @@
     <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
     <style>
         /* =======================================================
-           📦 จัดการให้โลโก้และข้อความอยู่ในบรรทัดเดียวกัน
+            📦 จัดการให้โลโก้และข้อความอยู่ในบรรทัดเดียวกัน
            ======================================================= */
         .logo-header-container {
             display: flex;
@@ -72,7 +72,7 @@
         }
 
         /* =======================================================
-           🛠️ แก้ไขส่วนจัดการกรอบรูป (Frame Selector) ให้เป็น Responsive Grid
+            🛠️ แก้ไขส่วนจัดการกรอบรูป (Frame Selector) ให้เป็น Responsive Grid
            ======================================================= */
         .frame-selector {
             display: grid;
@@ -128,12 +128,8 @@
         .slider-control {
             display: flex;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 0; /* ปรับให้พอดีเพราะเหลือแถวเดียว */
             gap: 10px;
-        }
-
-        .slider-control:last-child {
-            margin-bottom: 0;
         }
 
         .slider-control label {
@@ -204,6 +200,7 @@
             align-items: center;
             max-width: 100%;
             aspect-ratio: 1 / 1;
+            cursor: move; /* เปลี่ยนสัญลักษณ์เมาส์เป็นรูปสี่ทิศทางให้รู้ว่าลากได้ */
         }
 
         canvas {
@@ -260,7 +257,6 @@
             <h1>ACSC Picture Frame Styles</h1>                                     
         </div>
         
-
          <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
         <h3>1. เลือกสไตล์กรอบรูป</h3>
         <div class="frame-selector">
@@ -277,7 +273,7 @@
             <input type="file" id="imageLoader" accept="image/*">
         </div>
 
-        <div class="canvas-container">
+        <div class="canvas-container" id="canvasContainer">
             <canvas id="imageCanvas" width="800" height="800"></canvas>
         </div>
 
@@ -286,15 +282,7 @@
                 <label>🔍 ซูมรูปภาพ:</label>
                 <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" disabled>
             </div>
-            <div class="slider-control">
-                <label>↔️ ขยับซ้าย-ขวา:</label>
-                <input type="range" id="offsetXSlider" min="-400" max="400" step="1" value="0" disabled>
             </div>
-            <div class="slider-control">
-                <label>↕️ ขยับขึ้น-ลง:</label>
-                <input type="range" id="offsetYSlider" min="-400" max="400" step="1" value="0" disabled>
-            </div>
-        </div>
 
         <div class="control-group">
             <button id="downloadBtn" class="btn" disabled>บันทึกรูปภาพที่แต่งเสร็จแล้ว</button>
@@ -312,13 +300,10 @@
     <script>
         const imageLoader = document.getElementById('imageLoader');
         const canvas = document.getElementById('imageCanvas');
+        const canvasContainer = document.getElementById('canvasContainer');
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
-        
         const zoomSlider = document.getElementById('zoomSlider');
-        const offsetXSlider = document.getElementById('offsetXSlider');
-        const offsetYSlider = document.getElementById('offsetYSlider');
-
         const previewOverlay = document.getElementById('previewOverlay');
         const mobilePreviewImg = document.getElementById('mobilePreviewImg');
 
@@ -330,6 +315,11 @@
         let imgOffsetX = 0;
         let imgOffsetY = 0;
         let currentBlobUrl = null;
+
+        // ตัวแปรสำหรับจับตำแหน่งการลากรูปภาพ
+        let isDragging = false;
+        let startX = 0;
+        let startY = 0;
 
         frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame1.png'; 
@@ -381,14 +371,11 @@
                     zoomSlider.value = baseScale;
                     imgScale = baseScale;
                     
-                    offsetXSlider.value = 0;
-                    offsetYSlider.value = 0;
+                    // รีเซ็ตตำแหน่งให้อยู่ตรงกลางเมื่ออัปโหลดรูปใหม่
                     imgOffsetX = 0;
                     imgOffsetY = 0;
 
                     zoomSlider.disabled = false;
-                    offsetXSlider.disabled = false;
-                    offsetYSlider.disabled = false;
                     downloadBtn.disabled = false;
 
                     renderCombinedImage();
@@ -418,16 +405,61 @@
             renderCombinedImage();
         });
 
-        offsetXSlider.addEventListener('input', function() {
-            imgOffsetX = parseInt(this.value);
-            renderCombinedImage();
-        });
+        /* =======================================================
+            🖱️ ส่วนควบคุมการลากรูปภาพ (เมาส์ และ หน้าจอสัมผัส)
+           ======================================================= */
+        
+        // ฟังก์ชันช่วยคำนวณอัตราส่วนขนาดหน้าจอกับขนาด Canvas จริง (ป้องกันการลากแล้วความเร็วไม่สัมพันธ์กัน)
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
 
-        offsetYSlider.addEventListener('input', function() {
-            imgOffsetY = parseInt(this.value);
-            renderCombinedImage();
-        });
+        function startDrag(e) {
+            if (!hasUserImage) return;
+            isDragging = true;
+            const pos = getMousePos(e);
+            startX = pos.x - imgOffsetX;
+            startY = pos.y - imgOffsetY;
+            
+            // ป้องกันไม่ให้หน้าจอมือถือขยับเลื่อนตอนเรากำลังลากรูป
+            if(e.cancelable) e.preventDefault();
+        }
 
+        function dragMove(e) {
+            if (!isDragging || !hasUserImage) return;
+            const pos = getMousePos(e);
+            imgOffsetX = pos.x - startX;
+            imgOffsetY = pos.y - startY;
+            
+            renderCombinedImage();
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+        // ระบบตรวจจับสำหรับ เมาส์ (PC)
+        canvas.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('mouseup', stopDrag);
+
+        // ระบบตรวจจับสำหรับ นิ้วสัมผัส (มือถือ/แท็บเล็ต)
+        canvas.addEventListener('touchstart', startDrag, { passive: false });
+        canvas.addEventListener('touchmove', dragMove, { passive: false });
+        canvas.addEventListener('touchend', stopDrag);
+
+
+        /* =======================================================
+            💾 ระบบดาวน์โหลดรูปภาพ
+           ======================================================= */
         downloadBtn.addEventListener('click', function() {
             try {
                 canvas.toBlob(function(blob) {
