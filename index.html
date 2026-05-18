@@ -20,7 +20,7 @@
 
         /* ควบคุมขนาดโลโก้ด้านหน้าตัว A */
         .header-logo {
-            height: 70px;        /* ปรับความสูงให้ไล่เลี่ยกับขนาดตัวอักษร h1 */
+            height: 80px;        /* ปรับความสูงให้ไล่เลี่ยกับขนาดตัวอักษร h1 */
             width: auto;         /* ให้ความกว้างปรับอัตโนมัติตามสัดส่วนรูปจริง รูปจะได้ไม่บี้ */
             object-fit: contain;
         }
@@ -118,7 +118,7 @@
         }
 
         .sliders-box {
-            background: #f8fafc;
+            background: #bbd5ee;
             padding: 15px;
             border-radius: 12px;
             margin-bottom: 20px;
@@ -129,14 +129,15 @@
             display: flex;
             align-items: center;
             margin-bottom: 0; /* ปรับให้พอดีเพราะเหลือแถวเดียว */
-            gap: 10px;
+            gap: 15px;         /* ⚙️ [ปรับปรุง] เพิ่มช่องว่างระหว่างข้อความกับตัวสไลเดอร์ให้เหมาะสมมากขึ้น */
+            padding: 5px 0;    /* ⚙️ [ปรับปรุง] เพิ่มพื้นที่ด้านบน-ล่างให้กดลากง่ายขึ้นบนมือถือ */
         }
 
         .slider-control label {
             width: 110px;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
-            color: #960707;
+            color: #c00505;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
@@ -145,7 +146,7 @@
         .slider-control input[type="range"] {
             flex: 1;
             cursor: pointer;
-            min-width: 10;
+            min-width: 10px;
         }
 
         .btn {
@@ -185,7 +186,7 @@
             font-weight: bold;
             margin-bottom: 15px;
             transition: background 0.2s;
-            width: 50%;
+            width: 80%;
             box-sizing: border-box;
         }
 
@@ -280,9 +281,9 @@
         <div class="sliders-box">
             <div class="slider-control">
                 <label>🔍 ซูมรูปภาพ:</label>
-                <input type="range" id="zoomSlider" min="0.1" max="3" step="0.01" value="1" disabled>
+                <input type="range" id="zoomSlider" value="1" disabled>
             </div>
-            </div>
+        </div>
 
         <div class="control-group">
             <button id="downloadBtn" class="btn" disabled>บันทึกรูปภาพที่แต่งเสร็จแล้ว</button>
@@ -291,7 +292,7 @@
 
     <div id="previewOverlay" class="mobile-preview-overlay">
         <div class="mobile-preview-box">
-            <p>👇 กดค้างที่รูปภาพด้านล่าง เพื่อบันทึกเข้าเครื่อง 👇</p>
+            <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
             <img id="mobilePreviewImg" src="" alt="Framed Preview">
             <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
         </div>
@@ -367,7 +368,24 @@
                 userImage.onload = function() {
                     hasUserImage = true;
                     
+                    // คำนวณหาอัตราส่วนเริ่มต้นที่สเกลรูปภาพเต็มกรอบ Canvas พอดี
                     let baseScale = Math.max(canvas.width / userImage.width, canvas.height / userImage.height);
+                    
+                    // =======================================================
+                    // ⚙️ [ปรับปรุงแก้ไขอัตโนมัติ] ตั้งค่าช่วงสไลเดอร์ให้สัมพันธ์กับสัดส่วนรูปภาพจริง
+                    // เพื่อดันให้ปุ่มสไลเดอร์เริ่มต้นขยับมาทางขวา ไม่ติดขอบซ้ายสุด ใช้นิ้วเลื่อนง่ายบนมือถือ
+                    // =======================================================
+                    // ตั้งค่าขั้นต่ำ (min) ให้ลดขนาดจากจุดพอดีกรอบลงไปได้อีก 40% (เหลือกำลังดี ไม่ทำให้รูปเล็กจนเหลือขอบขาวเยอะเกินไป)
+                    zoomSlider.min = (baseScale * 0.6).toFixed(2);
+                    
+                    // ตั้งค่าขั้นสูง (max) ให้สามารถขยายซูมรูปภาพเข้าไปได้ถึง 4 เท่าจากขนาดเริ่มต้น
+                    zoomSlider.max = (baseScale * 4.0).toFixed(2);
+                    
+                    // ตั้งค่าความละเอียดขั้นในการเลื่อน
+                    zoomSlider.step = "0.01";
+                    
+                    // กำหนดค่าเริ่มต้นของสไลเดอร์ (value) ให้เท่ากับจุดที่รูปภาพพอดีกรอบ
+                    // ตอนนี้ปุ่มจับของสไลเดอร์จะขยับเยื้องมาทางขวาอย่างสวยงาม มีพื้นที่ให้ใช้นิ้วแตะลากสไลด์ได้ง่ายขึ้น
                     zoomSlider.value = baseScale;
                     imgScale = baseScale;
                     
