@@ -46,22 +46,41 @@
             margin-bottom: 20px;
         }
 
+        /* =======================================================
+           🛠️ แก้ไขส่วนจัดการกรอบรูป (Frame Selector) ให้เป็น Responsive Grid
+           ======================================================= */
         .frame-selector {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            display: grid;
+            /* ค่าเริ่มต้นบนสมาร์ตโฟนจอเล็ก: แบ่งแถวละ 3 รูปเพื่อให้เห็นครบแบบกะทัดรัด */
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 auto 20px auto;
+            max-width: 100%;
+            justify-items: center;
+        }
+
+        /* ปรับระดับสำหรับแท็บเล็ตและหน้าจอคอมพิวเตอร์ (หน้าจอกว้าง 450px ขึ้นไป) */
+        @media (min-width: 450px) {
+            .frame-selector {
+                /* ล็อกการแสดงผลเป็น 2 แถว แถวละ 3 รูปอย่างชัดเจนตามสัดส่วนคอนเทนเนอร์ */
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                max-width: 320px; /* จำกัดความกว้างของกลุ่มกรอบไม่ให้ยืดหลวมเกินไป */
+            }
         }
 
         .frame-option {
-            width: 70px;
-            height: 70px;
+            width: 100%;       /* ให้ความกว้างขยายตามสัดส่วนคอลัมน์ของ Grid */
+            max-width: 80px;   /* จำกัดไม่ให้กรอบรูปชิ้นเล็กใหญ่จนเกินงาม */
+            aspect-ratio: 1 / 1; /* บังคับให้บล็อกรูปคงรูปทรงสี่เหลี่ยมจัตุรัสไม่เบี้ยว */
             border: 3px solid #cbd5e1;
             border-radius: 10px;
             cursor: pointer;
             padding: 2px;
             transition: all 0.2s;
             background-color: #f8fafc;
+            object-fit: contain; /* รักษาอัตราส่วนของวงกลมกรอบรูปด้านในไม่ให้เบี้ยว */
+            box-sizing: border-box;
         }
 
         .frame-option:hover {
@@ -215,10 +234,12 @@
         <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
         <h3>1. เลือกสไตล์กรอบรูป</h3>
         <div class="frame-selector">
-            <img src="img/frame.png" class="frame-option active" onclick="changeFrame('img/frame.png', this)" alt="กรอบที่ 1">
+            <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
             <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
-            <img src="img/frameacsc1.png" class="frame-option" onclick="changeFrame('img/frameacsc1.png', this)" alt="กรอบที่ 3">
-            <img src="img/frameacsc2.png" class="frame-option" onclick="changeFrame('img/frameacsc2.png', this)" alt="กรอบที่ 4">
+            <img src="img/frame3.png" class="frame-option" onclick="changeFrame('img/frame3.png', this)" alt="กรอบที่ 3">
+            <img src="img/frame4.png" class="frame-option" onclick="changeFrame('img/frame4.png', this)" alt="กรอบที่ 4">
+            <img src="img/frame5.png" class="frame-option" onclick="changeFrame('img/frame5.png', this)" alt="กรอบที่ 5">
+            <img src="img/frame6.png" class="frame-option" onclick="changeFrame('img/frame6.png', this)" alt="กรอบที่ 6">
         </div>
 
         <div class="control-group">
@@ -278,10 +299,10 @@
         let imgScale = 1;
         let imgOffsetX = 0;
         let imgOffsetY = 0;
-        let currentBlobUrl = null; // เก็บตัวแปรเพื่อตามล้างหน่วยความจำ
+        let currentBlobUrl = null;
 
         frameImage.crossOrigin = "anonymous";
-        frameImage.src = 'img/frame.png';
+        frameImage.src = 'img/frame1.png'; // เปลี่ยนให้ดึงรูปแรกเริ่มตามสไตล์ของ active ตัวแรก
         frameImage.onload = function() {
             drawCanvasPlaceholder();
         };
@@ -377,7 +398,6 @@
             renderCombinedImage();
         });
 
-        // 🛠️ จุดแก้ไขสำคัญสำหรับ Android: ใช้ HTML5 Blob ร่วมกับ URL Object เพื่อเสถียรภาพสูงสุด
         downloadBtn.addEventListener('click', function() {
             try {
                 canvas.toBlob(function(blob) {
@@ -386,7 +406,6 @@
                         return;
                     }
 
-                    // ล้าง Blob URL เก่าเพื่อป้องกันหน่วยความจำเต็ม
                     if (currentBlobUrl) {
                         URL.revokeObjectURL(currentBlobUrl);
                     }
@@ -395,11 +414,9 @@
                     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                     
                     if (isMobile) {
-                        // ป้อน Blob URL ไปที่รูปตัวอย่างและเปิดหน้าต่าง Popup ปลอดภัย 100%
                         mobilePreviewImg.src = currentBlobUrl;
                         previewOverlay.style.display = 'flex';
                     } else {
-                        // ฝั่ง PC ดาวน์โหลดปกติ
                         const link = document.createElement('a');
                         link.download = 'custom-framed-image.png';
                         link.href = currentBlobUrl;
