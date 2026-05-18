@@ -134,7 +134,7 @@
 
         .slider-control label {
             width: 110px;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: bold;
             color: #960707;
             white-space: nowrap;
@@ -145,7 +145,7 @@
         .slider-control input[type="range"] {
             flex: 1;
             cursor: pointer;
-            min-width: 0;
+            min-width: 10;
         }
 
         .btn {
@@ -185,7 +185,7 @@
             font-weight: bold;
             margin-bottom: 15px;
             transition: background 0.2s;
-            width: 100%;
+            width: 50%;
             box-sizing: border-box;
         }
 
@@ -257,8 +257,8 @@
             <h1>ACSC Picture Frame Styles</h1>                                     
         </div>
         
-         <p class="subtitle">อัพโหลดรูป เลือกกรอบ และปรับขนาดได้ตามใจชอบ</p>
-        <h3>1. เลือกสไตล์กรอบรูป</h3>
+         <p class="subtitle">เลือกกรอบ อัพโหลดรูป และปรับขนาดได้ตามใจชอบ</p>
+        <label for="imageLoader" class="upload-label">1. เลือกสไตล์กรอบรูป</label>
         <div class="frame-selector">
             <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
             <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
