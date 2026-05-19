@@ -72,11 +72,10 @@
         }
 
         /* =======================================================
-            🛠️ แก้ไขส่วนจัดการกรอบรูป (Frame Selector) ให้เป็น Responsive Grid
+            🛠️ ส่วนจัดการกรอบรูป (Frame Selector) เป็น Responsive Grid
            ======================================================= */
         .frame-selector {
             display: grid;
-            /* ค่าเริ่มต้นบนสมาร์ตโฟนจอเล็ก: แบ่งแถวละ 3 รูปเพื่อให้เห็นครบแบบกะทัดรัด */
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
             margin: 0 auto 20px auto;
@@ -84,27 +83,25 @@
             justify-items: center;
         }
 
-        /* ปรับระดับสำหรับแท็บเล็ตและหน้าจอคอมพิวเตอร์ (หน้าจอกว้าง 450px ขึ้นไป) */
         @media (min-width: 450px) {
             .frame-selector {
-                /* ล็อกการแสดงผลเป็น 2 แถว แถวละ 3 รูปอย่างชัดเจนตามสัดส่วนคอนเทนเนอร์ */
                 grid-template-columns: repeat(3, 1fr);
                 gap: 15px;
-                max-width: 320px; /* จำกัดความกว้างของกลุ่มกรอบไม่ให้ยืดหลวมเกินไป */
+                max-width: 320px;
             }
         }
 
         .frame-option {
-            width: 100%;       /* ให้ความกว้างขยายตามสัดส่วนคอลัมน์ของ Grid */
-            max-width: 100px;   /* จำกัดไม่ให้กรอบรูปชิ้นเล็กใหญ่จนเกินงาม */
-            aspect-ratio: 1 / 1; /* บังคับให้บล็อกรูปคงรูปทรงสี่เหลี่ยมจัตุรัสไม่เบี้ยว */
+            width: 100%;
+            max-width: 100px;
+            aspect-ratio: 1 / 1;
             border: 3px solid #cbd5e1;
             border-radius: 10px;
             cursor: pointer;
             padding: 2px;
             transition: all 0.2s;
             background-color: #f8fafc;
-            object-fit: contain; /* รักษาอัตราส่วนของวงกลมกรอบรูปด้านในไม่ให้เบี้ยว */
+            object-fit: contain;
             box-sizing: border-box;
         }
 
@@ -128,9 +125,9 @@
         .slider-control {
             display: flex;
             align-items: center;
-            margin-bottom: 0; /* ปรับให้พอดีเพราะเหลือแถวเดียว */
-            gap: 15px;         /* ⚙️ [ปรับปรุง] เพิ่มช่องว่างระหว่างข้อความกับตัวสไลเดอร์ให้เหมาะสมมากขึ้น */
-            padding: 5px 0;    /* ⚙️ [ปรับปรุง] เพิ่มพื้นที่ด้านบน-ล่างให้กดลากง่ายขึ้นบนมือถือ */
+            margin-bottom: 0;
+            gap: 15px;
+            padding: 5px 0;
         }
 
         .slider-control label {
@@ -201,7 +198,7 @@
             align-items: center;
             max-width: 100%;
             aspect-ratio: 1 / 1;
-            cursor: move; /* เปลี่ยนสัญลักษณ์เมาส์เป็นรูปสี่ทิศทางให้รู้ว่าลากได้ */
+            cursor: move;
         }
 
         canvas {
@@ -258,7 +255,7 @@
             <h1>ACSC Picture Frame Styles</h1>                                    
         </div>
         
-         <p class="subtitle">เลือกกรอบ อัพโหลดรูป และปรับขนาดได้ตามใจชอบ</p>
+        <p class="subtitle">เลือกกรอบ อัพโหลดรูป และปรับขนาดได้ตามใจชอบ</p>
         <label for="imageLoader" class="upload-label">1. เลือกสไตล์กรอบรูป</label>
         <div class="frame-selector">
             <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
@@ -317,11 +314,11 @@
         let imgOffsetY = 0;
         let currentBlobUrl = null;
 
-        // ตัวแปรสำหรับจับตำแหน่งการลากรูปภาพ
         let isDragging = false;
         let startX = 0;
         let startY = 0;
 
+        // ปลดล็อกระบบความปลอดภัยของกรอบรูปเริ่มต้น
         frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame1.png'; 
         frameImage.onload = function() {
@@ -345,6 +342,7 @@
         }
 
         function changeFrame(frameSrc, element) {
+            // ปลดล็อกระบบความปลอดภัยเมื่อผู้ใช้เปลี่ยนกรอบรูป
             frameImage.crossOrigin = "anonymous";
             frameImage.src = frameSrc;
             
@@ -365,6 +363,8 @@
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
+                // 🛠️ [จุดแก้จุดที่ 1] ปลดล็อกความปลอดภัยรูปภาพที่อัปโหลดเข้ามาก่อนสั่งวาดลง Canvas
+                userImage.crossOrigin = "anonymous";
                 userImage.onload = function() {
                     hasUserImage = true;
                     
@@ -410,7 +410,7 @@
         });
 
         /* =======================================================
-            鼠标 และ หน้าจอสัมผัส ส่วนควบคุมการลากรูปภาพ
+            ส่วนควบคุมการลากรูปภาพ (เมาส์ และ สัมผัส)
            ======================================================= */
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -457,19 +457,27 @@
 
 
         /* =======================================================
-            💾 ระบบดาวน์โหลดรูปภาพ (อัปเดต Base64 รองรับ Android)
+            💾 ระบบดาวน์โหลดรูปภาพ (ผสมผสานระหว่าง PC บังคับโหลด และ Mobile โมเดลเซฟค้าง)
            ======================================================= */
         downloadBtn.addEventListener('click', function() {
             try {
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
                 if (isMobile) {
-                    // ✨ ใช้ Base64 Data URL บนสมาร์ทโฟน เพื่อให้ระบบ Android ใน Line กดค้างเซฟได้ทันที
+                    // 🛠️ [จุดแก้จุดที่ 2] แปลงเป็น Base64 เต็มรูปแบบสำหรับสมาร์ทโฟน
                     const base64Image = canvas.toDataURL('image/png');
                     mobilePreviewImg.src = base64Image;
                     previewOverlay.style.display = 'flex';
+
+                    // 🛠️ [จุดแก้จุดที่ 3] หากเปิดบนระบบเสรีอย่าง Chrome/Safari บนมือถือ จะแอบช่วยสั่งโหลดลงเครื่องให้อัตโนมัติด้วย
+                    const link = document.createElement('a');
+                    link.download = 'custom-framed-image.png';
+                    link.href = base64Image;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
                 } else {
-                    // ฝั่ง PC ใช้ Blob บันทึกไฟล์อัตโนมัติตามปกติเพื่อความเสถียร
+                    // ฝั่ง PC ใช้ระบบ Blob ดั้งเดิมที่มีเสถียรภาพหน่วยความจำสูงในการดาวน์โหลดภาพใหญ่
                     canvas.toBlob(function(blob) {
                         if (!blob) {
                             alert("ไม่สามารถประมวลผลรูปภาพได้");
