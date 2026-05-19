@@ -4,6 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
+    
+    <script>
+        (function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isLine = (ua.indexOf("Line") > -1);
+            const isAndroid = (/Android/i.test(ua));
+
+            if (isAndroid && isLine) {
+                // ดึง URL ปัจจุบันของเว็บเรา แล้วตัด https:// ออก
+                const currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
+                // สั่ง Android ให้เปิดลิงก์นี้ด้วยแอป Google Chrome โดยตรงทันที
+                window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            }
+        })();
+    </script>
+
     <style>
         /* =======================================================
             📦 จัดการให้โลโก้และข้อความอยู่ในบรรทัดเดียวกัน
@@ -205,7 +221,7 @@
             display: block;
         }
 
-        /* 📱 ปรับแต่งหน้าต่าง Popup ป้องกันปัญหา Line */
+        /* 📱 หน้าต่าง Popup สำหรับบันทึกรูป */
         .mobile-preview-overlay {
             display: none;
             position: fixed;
@@ -236,7 +252,6 @@
             height: auto;
             border-radius: 10px;
             border: 1px solid #ddd;
-            display: none; /* ซ่อนไว้ก่อนจนกว่าจะโหลดภาพสำเร็จ */
         }
 
         .mobile-preview-box p {
@@ -244,11 +259,6 @@
             font-weight: bold;
             color: #e11d48;
             font-size: 15px;
-        }
-        
-        .line-warning-box {
-            display: none;
-            padding: 10px;
         }
     </style>
 </head>
@@ -294,19 +304,8 @@
 
     <div id="previewOverlay" class="mobile-preview-overlay">
         <div class="mobile-preview-box">
-            <div id="normalMobileView">
-                <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
-                <img id="mobilePreviewImg" src="" alt="Framed Preview">
-            </div>
-            
-            <div id="lineWarningView" class="line-warning-box">
-                <h3 style="color:#e11d48; margin-top:0;">⚠️ แอป Line บล็อกการดาวน์โหลด</h3>
-                <p style="color:#334155; font-weight:normal; font-size:14px; margin-bottom:20px;">
-                    เนื่องจากระบบความปลอดภัยของ Line บน Android ไม่ยอมให้บันทึกรูปภาพโดยตรง <br><strong>กรุณากดปุ่มด้านล่างเพื่อเปิดใช้งานบน Google Chrome</strong> จะสามารถดาวน์โหลดได้ทันทีครับ
-                </p>
-                <button class="btn" style="background-color: #0ea5e9; margin-bottom:10px;" onclick="openInExternalBrowser()">🌐 เปิดหน้าเว็บนี้ใน Chrome</button>
-            </div>
-            
+            <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
+            <img id="mobilePreviewImg" src="" alt="Framed Preview">
             <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
         </div>
     </div>
@@ -320,8 +319,6 @@
         const zoomSlider = document.getElementById('zoomSlider');
         const previewOverlay = document.getElementById('previewOverlay');
         const mobilePreviewImg = document.getElementById('mobilePreviewImg');
-        const normalMobileView = document.getElementById('normalMobileView');
-        const lineWarningView = document.getElementById('lineWarningView');
 
         let userImage = new Image();
         let frameImage = new Image();
@@ -465,33 +462,19 @@
 
 
         /* =======================================================
-            💾 ระบบดาวน์โหลดและตรวจจับแอป Line (ไม้ตายสุดท้าย)
+            💾 ระบบดาวน์โหลดรูปภาพ (เมื่ออยู่บน Chrome จะเสถียรและเซฟได้ 100%)
            ======================================================= */
         downloadBtn.addEventListener('click', function() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isLine = (ua.indexOf("Line") > -1);
-            const isAndroid = (/Android/i.test(ua));
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-            
-            // 🚨 ตรวจจับเลยว่าเปิดใน Line บน Android ใช่ไหม
-            if (isAndroid && isLine) {
-                // แสดงผลบล็อกแจ้งเตือนย้ายไปเปิดบน Chrome
-                normalMobileView.style.display = 'none';
-                lineWarningView.style.display = 'block';
-                previewOverlay.style.display = 'flex';
-                return;
-            }
-
-            // ถ้าไม่ได้เปิดใน Line Android ให้ทำงานดาวน์โหลดตามปกติ
             try {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
                 if (isMobile) {
+                    // บน Mobile Chrome: แปลงรูปเป็น Base64 แปะบนป๊อปอัปเพื่อให้ใช้นิ้วกดค้างเซฟได้สบายใจ
                     const base64Image = canvas.toDataURL('image/png');
                     mobilePreviewImg.src = base64Image;
-                    mobilePreviewImg.style.display = 'inline-block';
-                    normalMobileView.style.display = 'block';
-                    lineWarningView.style.display = 'none';
                     previewOverlay.style.display = 'flex';
                 } else {
+                    // บน PC: สั่งคลิกดาวน์โหลดอัตโนมัติ
                     canvas.toBlob(function(blob) {
                         if (!blob) return;
                         if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
@@ -510,13 +493,6 @@
                 alert("เกิดข้อผิดพลาด กรุณาลองแคปหน้าจอแทนนะครับ");
             }
         });
-
-        // ฟังก์ชันสั่งสลัดตัวออกจาก Line ไปเข้า Google Chrome
-        function openInExternalBrowser() {
-            // ใช้ความสามารถของ Line Intent สำหรับ Android ในการสั่งเปิดแอปภายนอกเดี่ยว ๆ
-            const currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
-            window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
-        }
 
         function closePreview() {
             previewOverlay.style.display = 'none';
