@@ -12,20 +12,18 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;          /* ระยะห่างระหว่างโลโก้กับตัว A */
+            gap: 10px;
             margin-top: 10px;
             margin-bottom: 5px;
             width: 100%;
         }
 
-        /* ควบคุมขนาดโลโก้ด้านหน้าตัว A */
         .header-logo {
-            height: 80px;        /* ปรับความสูงให้ไล่เลี่ยกับขนาดตัวอักษร h1 */
-            width: auto;         /* ให้ความกว้างปรับอัตโนมัติตามสัดส่วนรูปจริง รูปจะได้ไม่บี้ */
+            height: 80px;
+            width: auto;
             object-fit: contain;
         }
 
-        /* ล้างค่า Margin เดิมของ h1 เพื่อไม่ให้เบียดกับโลโก้ */
         .logo-header-container h1 {
             margin: 0;
             display: inline-block;
@@ -207,6 +205,7 @@
             display: block;
         }
 
+        /* 📱 ปรับแต่งหน้าต่าง Popup ป้องกันปัญหา Line */
         .mobile-preview-overlay {
             display: none;
             position: fixed;
@@ -225,7 +224,7 @@
 
         .mobile-preview-box {
             background: white;
-            padding: 15px;
+            padding: 20px;
             border-radius: 15px;
             max-width: 90%;
             text-align: center;
@@ -237,6 +236,7 @@
             height: auto;
             border-radius: 10px;
             border: 1px solid #ddd;
+            display: none; /* ซ่อนไว้ก่อนจนกว่าจะโหลดภาพสำเร็จ */
         }
 
         .mobile-preview-box p {
@@ -244,6 +244,11 @@
             font-weight: bold;
             color: #e11d48;
             font-size: 15px;
+        }
+        
+        .line-warning-box {
+            display: none;
+            padding: 10px;
         }
     </style>
 </head>
@@ -289,8 +294,19 @@
 
     <div id="previewOverlay" class="mobile-preview-overlay">
         <div class="mobile-preview-box">
-            <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
-            <img id="mobilePreviewImg" src="" alt="Framed Preview">
+            <div id="normalMobileView">
+                <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
+                <img id="mobilePreviewImg" src="" alt="Framed Preview">
+            </div>
+            
+            <div id="lineWarningView" class="line-warning-box">
+                <h3 style="color:#e11d48; margin-top:0;">⚠️ แอป Line บล็อกการดาวน์โหลด</h3>
+                <p style="color:#334155; font-weight:normal; font-size:14px; margin-bottom:20px;">
+                    เนื่องจากระบบความปลอดภัยของ Line บน Android ไม่ยอมให้บันทึกรูปภาพโดยตรง <br><strong>กรุณากดปุ่มด้านล่างเพื่อเปิดใช้งานบน Google Chrome</strong> จะสามารถดาวน์โหลดได้ทันทีครับ
+                </p>
+                <button class="btn" style="background-color: #0ea5e9; margin-bottom:10px;" onclick="openInExternalBrowser()">🌐 เปิดหน้าเว็บนี้ใน Chrome</button>
+            </div>
+            
             <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
         </div>
     </div>
@@ -304,6 +320,8 @@
         const zoomSlider = document.getElementById('zoomSlider');
         const previewOverlay = document.getElementById('previewOverlay');
         const mobilePreviewImg = document.getElementById('mobilePreviewImg');
+        const normalMobileView = document.getElementById('normalMobileView');
+        const lineWarningView = document.getElementById('lineWarningView');
 
         let userImage = new Image();
         let frameImage = new Image();
@@ -318,7 +336,6 @@
         let startX = 0;
         let startY = 0;
 
-        // ปลดล็อกระบบความปลอดภัยของกรอบรูปเริ่มต้น
         frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame1.png'; 
         frameImage.onload = function() {
@@ -342,7 +359,6 @@
         }
 
         function changeFrame(frameSrc, element) {
-            // ปลดล็อกระบบความปลอดภัยเมื่อผู้ใช้เปลี่ยนกรอบรูป
             frameImage.crossOrigin = "anonymous";
             frameImage.src = frameSrc;
             
@@ -363,7 +379,6 @@
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                // ปลดล็อกความปลอดภัยรูปภาพที่อัปโหลดเข้ามาก่อนสั่งวาดลง Canvas
                 userImage.crossOrigin = "anonymous";
                 userImage.onload = function() {
                     hasUserImage = true;
@@ -409,9 +424,7 @@
             renderCombinedImage();
         });
 
-        /* =======================================================
-            ส่วนควบคุมการลากรูปภาพ (เมาส์ และ สัมผัส)
-           ======================================================= */
+        /* Controls */
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -429,7 +442,6 @@
             const pos = getMousePos(e);
             startX = pos.x - imgOffsetX;
             startY = pos.y - imgOffsetY;
-            
             if(e.cancelable) e.preventDefault();
         }
 
@@ -438,47 +450,51 @@
             const pos = getMousePos(e);
             imgOffsetX = pos.x - startX;
             imgOffsetY = pos.y - startY;
-            
             renderCombinedImage();
             if(e.cancelable) e.preventDefault();
         }
 
-        function stopDrag() {
-            isDragging = false;
-        }
+        function stopDrag() { isDragging = false; }
 
         canvas.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', dragMove);
         window.addEventListener('mouseup', stopDrag);
-
         canvas.addEventListener('touchstart', startDrag, { passive: false });
         canvas.addEventListener('touchmove', dragMove, { passive: false });
         canvas.addEventListener('touchend', stopDrag);
 
 
         /* =======================================================
-            💾 ระบบดาวน์โหลดรูปภาพ (ถอนคำสั่งดาวน์โหลดอัตโนมัติของมือถือออกเพื่อแก้ปัญหา Line บล็อก)
+            💾 ระบบดาวน์โหลดและตรวจจับแอป Line (ไม้ตายสุดท้าย)
            ======================================================= */
         downloadBtn.addEventListener('click', function() {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isLine = (ua.indexOf("Line") > -1);
+            const isAndroid = (/Android/i.test(ua));
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+            
+            // 🚨 ตรวจจับเลยว่าเปิดใน Line บน Android ใช่ไหม
+            if (isAndroid && isLine) {
+                // แสดงผลบล็อกแจ้งเตือนย้ายไปเปิดบน Chrome
+                normalMobileView.style.display = 'none';
+                lineWarningView.style.display = 'block';
+                previewOverlay.style.display = 'flex';
+                return;
+            }
+
+            // ถ้าไม่ได้เปิดใน Line Android ให้ทำงานดาวน์โหลดตามปกติ
             try {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
                 if (isMobile) {
-                    // ✨ สำหรับมือถือ: แปลงรูปเป็น Base64 แล้วเปิดแสดงผลในหน้าป๊อปอัปเพื่อให้ใช้นิ้วกดค้างบันทึกเท่านั้น
-                    // ลบชุดคำสั่งจำลองการคลิกลิงก์ดาวน์โหลดอัตโนมัติออกทั้งหมด เพื่อไม่ให้แอป Line บล็อกการทำงาน
                     const base64Image = canvas.toDataURL('image/png');
                     mobilePreviewImg.src = base64Image;
+                    mobilePreviewImg.style.display = 'inline-block';
+                    normalMobileView.style.display = 'block';
+                    lineWarningView.style.display = 'none';
                     previewOverlay.style.display = 'flex';
                 } else {
-                    // ฝั่ง PC: ใช้ระบบ Blob ดั้งเดิมในการคลิกดาวน์โหลดอัตโนมัติลงเครื่องตามปกติ
                     canvas.toBlob(function(blob) {
-                        if (!blob) {
-                            alert("ไม่สามารถประมวลผลรูปภาพได้");
-                            return;
-                        }
-                        if (currentBlobUrl) {
-                            URL.revokeObjectURL(currentBlobUrl);
-                        }
+                        if (!blob) return;
+                        if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
                         currentBlobUrl = URL.createObjectURL(blob);
                         
                         const link = document.createElement('a');
@@ -490,10 +506,17 @@
                     }, 'image/png');
                 }
             } catch (error) {
-                console.error("Error generating image:", error);
+                console.error(error);
                 alert("เกิดข้อผิดพลาด กรุณาลองแคปหน้าจอแทนนะครับ");
             }
         });
+
+        // ฟังก์ชันสั่งสลัดตัวออกจาก Line ไปเข้า Google Chrome
+        function openInExternalBrowser() {
+            // ใช้ความสามารถของ Line Intent สำหรับ Android ในการสั่งเปิดแอปภายนอกเดี่ยว ๆ
+            const currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
+            window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+        }
 
         function closePreview() {
             previewOverlay.style.display = 'none';
