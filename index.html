@@ -363,7 +363,7 @@
         function handleImage(e) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                // 🛠️ [จุดแก้จุดที่ 1] ปลดล็อกความปลอดภัยรูปภาพที่อัปโหลดเข้ามาก่อนสั่งวาดลง Canvas
+                // ปลดล็อกความปลอดภัยรูปภาพที่อัปโหลดเข้ามาก่อนสั่งวาดลง Canvas
                 userImage.crossOrigin = "anonymous";
                 userImage.onload = function() {
                     hasUserImage = true;
@@ -457,27 +457,20 @@
 
 
         /* =======================================================
-            💾 ระบบดาวน์โหลดรูปภาพ (ผสมผสานระหว่าง PC บังคับโหลด และ Mobile โมเดลเซฟค้าง)
+            💾 ระบบดาวน์โหลดรูปภาพ (ถอนคำสั่งดาวน์โหลดอัตโนมัติของมือถือออกเพื่อแก้ปัญหา Line บล็อก)
            ======================================================= */
         downloadBtn.addEventListener('click', function() {
             try {
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 
                 if (isMobile) {
-                    // 🛠️ [จุดแก้จุดที่ 2] แปลงเป็น Base64 เต็มรูปแบบสำหรับสมาร์ทโฟน
+                    // ✨ สำหรับมือถือ: แปลงรูปเป็น Base64 แล้วเปิดแสดงผลในหน้าป๊อปอัปเพื่อให้ใช้นิ้วกดค้างบันทึกเท่านั้น
+                    // ลบชุดคำสั่งจำลองการคลิกลิงก์ดาวน์โหลดอัตโนมัติออกทั้งหมด เพื่อไม่ให้แอป Line บล็อกการทำงาน
                     const base64Image = canvas.toDataURL('image/png');
                     mobilePreviewImg.src = base64Image;
                     previewOverlay.style.display = 'flex';
-
-                    // 🛠️ [จุดแก้จุดที่ 3] หากเปิดบนระบบเสรีอย่าง Chrome/Safari บนมือถือ จะแอบช่วยสั่งโหลดลงเครื่องให้อัตโนมัติด้วย
-                    const link = document.createElement('a');
-                    link.download = 'custom-framed-image.png';
-                    link.href = base64Image;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
                 } else {
-                    // ฝั่ง PC ใช้ระบบ Blob ดั้งเดิมที่มีเสถียรภาพหน่วยความจำสูงในการดาวน์โหลดภาพใหญ่
+                    // ฝั่ง PC: ใช้ระบบ Blob ดั้งเดิมในการคลิกดาวน์โหลดอัตโนมัติลงเครื่องตามปกติ
                     canvas.toBlob(function(blob) {
                         if (!blob) {
                             alert("ไม่สามารถประมวลผลรูปภาพได้");
