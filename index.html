@@ -1,29 +1,20 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
-    
     <script>
         (function() {
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isLine = (ua.indexOf("Line") > -1);
-            const isAndroid = (/Android/i.test(ua));
-
-            if (isAndroid && isLine) {
-                // ดึง URL ปัจจุบันของเว็บเรา แล้วตัด https:// ออก
-                const currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
-                // สั่ง Android ให้เปิดลิงก์นี้ด้วยแอป Google Chrome โดยตรงทันที
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/Android/i.test(ua) && ua.indexOf("Line") > -1) {
+                var currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
                 window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
             }
         })();
     </script>
 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
     <style>
-        /* =======================================================
-            📦 จัดการให้โลโก้และข้อความอยู่ในบรรทัดเดียวกัน
-           ======================================================= */
         .logo-header-container {
             display: flex;
             align-items: center;
@@ -85,9 +76,6 @@
             margin-bottom: 20px;
         }
 
-        /* =======================================================
-            🛠️ ส่วนจัดการกรอบรูป (Frame Selector) เป็น Responsive Grid
-           ======================================================= */
         .frame-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -221,7 +209,6 @@
             display: block;
         }
 
-        /* 📱 หน้าต่าง Popup สำหรับบันทึกรูป */
         .mobile-preview-overlay {
             display: none;
             position: fixed;
@@ -313,7 +300,6 @@
     <script>
         const imageLoader = document.getElementById('imageLoader');
         const canvas = document.getElementById('imageCanvas');
-        const canvasContainer = document.getElementById('canvasContainer');
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
         const zoomSlider = document.getElementById('zoomSlider');
@@ -323,21 +309,16 @@
         let userImage = new Image();
         let frameImage = new Image();
         let hasUserImage = false;
-
         let imgScale = 1;
         let imgOffsetX = 0;
         let imgOffsetY = 0;
         let currentBlobUrl = null;
-
         let isDragging = false;
-        let startX = 0;
-        let startY = 0;
+        let startX = 0, startY = 0;
 
         frameImage.crossOrigin = "anonymous";
         frameImage.src = 'img/frame1.png'; 
-        frameImage.onload = function() {
-            drawCanvasPlaceholder();
-        };
+        frameImage.onload = function() { drawCanvasPlaceholder(); };
 
         function drawCanvasPlaceholder() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -358,16 +339,11 @@
         function changeFrame(frameSrc, element) {
             frameImage.crossOrigin = "anonymous";
             frameImage.src = frameSrc;
-            
             document.querySelectorAll('.frame-option').forEach(el => el.classList.remove('active'));
             element.classList.add('active');
-
             frameImage.onload = function() {
-                if(hasUserImage) {
-                    renderCombinedImage();
-                } else {
-                    drawCanvasPlaceholder();
-                }
+                if(hasUserImage) renderCombinedImage();
+                else drawCanvasPlaceholder();
             };
         }
 
@@ -379,39 +355,28 @@
                 userImage.crossOrigin = "anonymous";
                 userImage.onload = function() {
                     hasUserImage = true;
-                    
                     let baseScale = Math.max(canvas.width / userImage.width, canvas.height / userImage.height);
-                    
                     zoomSlider.min = (baseScale * 0.6).toFixed(2);
                     zoomSlider.max = (baseScale * 4.0).toFixed(2);
                     zoomSlider.step = "0.01";
                     zoomSlider.value = baseScale;
                     imgScale = baseScale;
-                    
-                    imgOffsetX = 0;
-                    imgOffsetY = 0;
-
+                    imgOffsetX = 0; imgOffsetY = 0;
                     zoomSlider.disabled = false;
                     downloadBtn.disabled = false;
-
                     renderCombinedImage();
                 }
                 userImage.src = event.target.result;
             }
-            if(e.target.files[0]) {
-                reader.readAsDataURL(e.target.files[0]);
-            }
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
         }
 
         function renderCombinedImage() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
             let baseWidth = userImage.width * imgScale;
             let baseHeight = userImage.height * imgScale;
-            
             let x = (canvas.width / 2) - (baseWidth / 2) + imgOffsetX;
             let y = (canvas.height / 2) - (baseHeight / 2) + imgOffsetY;
-            
             ctx.drawImage(userImage, x, y, baseWidth, baseHeight);
             ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
         }
@@ -421,12 +386,10 @@
             renderCombinedImage();
         });
 
-        /* Controls */
         function getMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             const clientX = e.touches ? e.touches[0].clientX : e.clientX;
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-            
             return {
                 x: (clientX - rect.left) * (canvas.width / rect.width),
                 y: (clientY - rect.top) * (canvas.height / rect.height)
@@ -460,26 +423,18 @@
         canvas.addEventListener('touchmove', dragMove, { passive: false });
         canvas.addEventListener('touchend', stopDrag);
 
-
-        /* =======================================================
-            💾 ระบบดาวน์โหลดรูปภาพ (เมื่ออยู่บน Chrome จะเสถียรและเซฟได้ 100%)
-           ======================================================= */
         downloadBtn.addEventListener('click', function() {
             try {
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                
                 if (isMobile) {
-                    // บน Mobile Chrome: แปลงรูปเป็น Base64 แปะบนป๊อปอัปเพื่อให้ใช้นิ้วกดค้างเซฟได้สบายใจ
                     const base64Image = canvas.toDataURL('image/png');
                     mobilePreviewImg.src = base64Image;
                     previewOverlay.style.display = 'flex';
                 } else {
-                    // บน PC: สั่งคลิกดาวน์โหลดอัตโนมัติ
                     canvas.toBlob(function(blob) {
                         if (!blob) return;
                         if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
                         currentBlobUrl = URL.createObjectURL(blob);
-                        
                         const link = document.createElement('a');
                         link.download = 'custom-framed-image.png';
                         link.href = currentBlobUrl;
@@ -494,9 +449,7 @@
             }
         });
 
-        function closePreview() {
-            previewOverlay.style.display = 'none';
-        }
+        function closePreview() { previewOverlay.style.display = 'none'; }
     </script>
 </body>
 </html>
