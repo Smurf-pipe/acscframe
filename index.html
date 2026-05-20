@@ -42,11 +42,10 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.08);
             text-align: center;
             width: 100%;
-            max-width: 550px; /* ควบคุมความกว้างสูงสุดบน Desktop */
+            max-width: 550px;
             transition: all 0.3s ease;
         }
 
-        /* สำหรับ Tablet และ Desktop ขยายพื้นที่ให้ใช้งานได้เต็มตาขึ้น */
         @media (min-width: 768px) {
             body {
                 padding: 30px 15px;
@@ -57,7 +56,7 @@
             }
         }
 
-        /* --- Header & Logo ปรับขนาด Responsive ตามหน้าจอ --- */
+        /* --- Header & Logo ปรับขนาด Responsive --- */
         .logo-header-container {
             display: flex;
             align-items: center;
@@ -66,7 +65,7 @@
             margin-top: 5px;
             margin-bottom: 15px;
             width: 100%;
-            flex-wrap: wrap; /* รองรับมือถือหน้าจอเล็กมากไม่ให้หลุดขอบ */
+            flex-wrap: wrap;
         }
 
         .header-logo {
@@ -85,7 +84,7 @@
             margin: 0;
             display: inline-block;
             color: #fbf304;
-            font-size: 18px; /* ขนาดเริ่มต้นบนมือถือขนาดเล็ก */
+            font-size: 18px;
             background-color: rgba(48, 18, 243, 0.7);
             border: 3px solid #4f46e5;
             border-radius: 12px;
@@ -97,7 +96,6 @@
             transition: all 0.3s ease;
         }
 
-        /* ขยายขนาด Header เมื่ออยู่บนจอใหญ่ (Tablet & Desktop) */
         @media (min-width: 480px) {
             .header-logo {
                 height: 80px;
@@ -140,8 +138,8 @@
 
         .upload-label {
             display: inline-block;
-            background-color: #f2f8fcbd;
-            color: rgb(58, 5, 250);
+            background-color: #0ea5e9;
+            color: white;
             padding: 12px 20px;
             border-radius: 10px;
             cursor: pointer;
@@ -152,7 +150,7 @@
             max-width: 400px;
         }
 
-        /* --- Frame Selector จัดระเบียบ Grid --- */
+        /* --- Frame Selector --- */
         .frame-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -198,7 +196,7 @@
             justify-content: center;
         }
 
-        /* --- Canvas Container ยืดหยุ่น 100% --- */
+        /* --- Canvas Container --- */
         .canvas-container {
             margin: 20px auto;
             border: 2px dashed #cbd5e1;
@@ -209,7 +207,7 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 400px; /* ขนาดสูงสุดบนมือถือ */
+            max-width: 400px;
             aspect-ratio: 1 / 1;
             cursor: move;
             transition: max-width 0.3s ease;
@@ -217,7 +215,7 @@
 
         @media (min-width: 768px) {
             .canvas-container {
-                max-width: 480px; /* ขยายขนาดพื้นที่ Canvas บน Tablet/Desktop */
+                max-width: 480px;
             }
         }
 
@@ -257,7 +255,7 @@
             width: 100px;
             font-size: 14px;
             font-weight: bold;
-            color: #1805c0;
+            color: #1e05c0;
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
@@ -273,7 +271,7 @@
         /* --- Buttons --- */
         .btn {
             background-color: #4f46e5;
-            color: rgb(245, 8, 8);
+            color: white;
             padding: 14px 25px;
             border: none;
             border-radius: 10px;
@@ -315,7 +313,6 @@
             background: white;
             padding: 20px;
             border-radius: 15px;
-            max-width: 90%;
             width: 100%;
             max-width: 450px;
             text-align: center;
@@ -336,7 +333,7 @@
             font-size: 15px;
         }
 
-        /* --- Action Sheet Overlay สำหรับ Mobile & Tablet --- */
+        /* --- Action Sheet Overlay --- */
         .action-sheet-overlay {
             display: none;
             position: fixed;
@@ -344,7 +341,7 @@
             background-color: rgba(0, 0, 0, 0.4);
             z-index: 2000;
             justify-content: center;
-            align-items: flex-end; /* ล่างสุดของหน้าจอใน Mobile */
+            align-items: flex-end;
             padding: 15px;
             opacity: 0;
             transition: opacity 0.3s ease;
@@ -362,10 +359,9 @@
             padding-bottom: env(safe-area-inset-bottom, 10px);
         }
         
-        /* ปรับดีไซน์ Action Sheet ให้เหมือน Dialog ตรงกลางสากลบนหน้าจอ Tablet หรือ Desktop */
         @media (min-width: 576px) {
             .action-sheet-overlay {
-                align-items: center; /* จัดกึ่งกลางหน้าจอสำหรับ Tablet/PC */
+                align-items: center;
             }
             .action-sheet {
                 transform: scale(0.8) translateY(0);
@@ -411,7 +407,7 @@
             background-color: rgba(0,0,0,0.1);
         }
         
-        .action-btn span {
+        .action-btn span:first-child {
             text-align: left;
             flex: 1;
         }
@@ -434,20 +430,19 @@
             background-color: rgba(0,0,0,0.1);
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <div class="container">
         <div class="logo-header-container">
             <img src="img/Star.png" alt="ACSC Logo" class="header-logo"> 
-            <h1>ACSC Frame Styles</h1>                                    
+            <h1>ACSC Picture Frame Styles</h1>                                    
         </div>
         
         <p class="subtitle">โรงเรียนเสนาธิการทหารอากาศ</p>
         
         <div class="control-group">
-            <label class="upload-label" style="cursor: default; margin-bottom: 0;">🖼️ เลือกสไตล์กรอบรูป </label>
+            <label class="upload-label" style="cursor: default; margin-bottom: 0;">1. เลือกสไตล์กรอบรูป</label>
         </div>
         
         <div class="frame-selector">
@@ -460,10 +455,11 @@
         </div>
 
         <div class="control-group">
-            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none; margin-bottom: 0;" onclick="openActionSheet()"> 🎞️ เลือกรูปภาพของคุณ</button>
+            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none; margin-bottom: 0;" onclick="openActionSheet()">2. เลือกรูปภาพของคุณ</button>
             
             <input type="file" id="galleryInput" accept="image/*" style="display: none;">
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" style="display: none;">
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
         </div>
 
         <div class="canvas-container" id="canvasContainer">
@@ -478,37 +474,35 @@
         </div>
 
         <div class="control-group">
-            <button id="downloadBtn" class="btn" disabled>💾 บันทึกรูปภาพ</button>
+            <button id="downloadBtn" class="btn" disabled>บันทึกรูปภาพที่แต่งเสร็จแล้ว</button>
         </div>
     </div>
 
-    <!-- Action Sheet / Dialog Overlay -->
     <div id="actionSheetOverlay" class="action-sheet-overlay" onclick="closeActionSheet(event)">
         <div id="actionSheet" class="action-sheet" onclick="event.stopPropagation()">
             <div class="action-menu">
                 <button class="action-btn" onclick="triggerInput('galleryInput')">
-                    <span>🖼️ คลังรูปภาพ</span>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>คลังรูปภาพ</span>
+                    <span style="font-size: 22px;">🖼️</span>
                 </button>
                 <button class="action-btn" onclick="triggerInput('cameraInput')">
-                    <span>📷 ถ่ายภาพ</span>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <span>ถ่ายภาพ</span>
+                    <span style="font-size: 22px;">📷</span>
                 </button>
-                <button class="action-btn" onclick="triggerInput('galleryInput')">
-                    <span>📁 เลือกไฟล์</span>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                <button class="action-btn" onclick="triggerInput('fileInput')">
+                    <span>เลือกไฟล์</span>
+                    <span style="font-size: 22px;">📁</span>
                 </button>
             </div>
             <button class="cancel-btn" onclick="closeActionSheet(event)">ยกเลิก</button>
         </div>
     </div>
 
-    <!-- Preview สำหรับบันทึกรูปบน Smartphone -->
     <div id="previewOverlay" class="mobile-preview-overlay">
         <div class="mobile-preview-box">
             <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
             <img id="mobilePreviewImg" src="" alt="Framed Preview">
-            <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">⚙️ กลับไปแก้ไข</button>
+            <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
         </div>
     </div>
 
@@ -546,7 +540,7 @@
                 ctx.fillStyle = "#64748b";
                 ctx.font = "30px Arial";
                 ctx.textAlign = "center";
-                ctx.fillText("กรุณากดเลือกรูปภาพ ⏫", canvas.width / 2, canvas.height / 2 + 10);
+                ctx.fillText("กรุณาเลือกรูปภาพของคุณในขั้นตอนที่ 2", canvas.width / 2, canvas.height / 2 + 10);
             }
         }
 
@@ -561,7 +555,7 @@
             };
         }
 
-        // --- ระบบเปิด-ปิด Action Sheet / Dialog ---
+        // --- ระบบเปิด-ปิด Action Sheet ---
         function openActionSheet() {
             const overlay = document.getElementById('actionSheetOverlay');
             const sheet = document.getElementById('actionSheet');
@@ -592,9 +586,10 @@
             }, 350);
         }
 
-        // ผูก Event ให้ทำงานเมื่อผู้ใช้เลือกรูป
+        // ผูก Event การรับไฟล์
         document.getElementById('galleryInput').addEventListener('change', handleImage, false);
         document.getElementById('cameraInput').addEventListener('change', handleImage, false);
+        document.getElementById('fileInput').addEventListener('change', handleImage, false);
 
         function handleImage(e) {
             const reader = new FileReader();
