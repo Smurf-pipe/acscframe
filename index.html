@@ -13,7 +13,7 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>โรงเรียนเสนาธิการทหารอากาศ</title>
+    <title>โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
     <style>
         .logo-header-container {
             display: flex;
@@ -60,7 +60,7 @@
             padding: 15px;
         }
 
-        h2 {
+        h1 {
             color: #fbf304;
             background-color: #3012f3b0;
             font-size: 24px;
@@ -69,7 +69,14 @@
             border-radius: 12px; /* กำหนดขอบลบมุม */
             padding: 8px 15px; /* เพิ่มช่องว่างภายในเพื่อให้สวยงาม */
         }
-        
+
+        p.subtitle {
+            color: #ecf805;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
         .container {
             background-image: url('img/background2.png');
             padding: 20px;
@@ -332,9 +339,10 @@
     <div class="container">
         <div class="logo-header-container">
             <img src="img/Star.png" alt="ACSC Logo" class="header-logo"> 
-            <h2>ACSC FRAME STYLE</h2>                                    
+            <h1>ACSC Frame Styles</h1>                                    
         </div>
-        <p>โรงเรียนเสนาธิการทหารอากาศ</p>
+        
+        <p class="subtitle">โรงเรียนเสนาธิการทหารอากาศ</p>
         <label class="upload-label" style="cursor: default;">1. เลือกสไตล์กรอบรูป</label>
         <div class="frame-selector">
             <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
