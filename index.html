@@ -566,6 +566,15 @@
         }
 
         function openActionSheet() {
+            // ตรวจสอบว่าเป็นระบบปฏิบัติการ iOS (iPhone/iPad/iPod) หรือไม่
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isIOS) {
+                // หากเป็น iOS ให้เปิดเมนูเลือกรูปภาพของระบบโดยตรงทันที เพื่อให้ขึ้นมาครั้งเดียว
+                document.getElementById('galleryInput').click();
+                return;
+            }
+
+            // ระบบอื่น ๆ (Android) ทำงานตามปกติ
             const overlay = document.getElementById('actionSheetOverlay');
             const sheet = document.getElementById('actionSheet');
             overlay.style.display = 'flex';
