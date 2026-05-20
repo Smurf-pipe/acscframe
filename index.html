@@ -61,22 +61,31 @@
         }
 
         h1 {
-            color: #fbf304;
-            background-color: #3012f3b0;
-            font-size: 24px;
-            /* --- แก้ไขเพื่อใส่กรอบและทำขอบลบมุม --- */
-            border: 4px solid #4f46e5; /* กำหนดกรอบสีน้ำเงิน */
-            border-radius: 12px; /* กำหนดขอบลบมุม */
-            padding: 8px 15px; /* เพิ่มช่องว่างภายในเพื่อให้สวยงาม */
-        }
+    color: #fbf304;
+    font-size: 20px;
+    background-color: rgba(48, 18, 243, 0.7);
+    border: 3px solid #4f46e5;
+    border-radius: 12px;
+    padding: 8px 15px;
+    margin: 0;
+    
+    /* ใส่เพิ่มตรงนี้: ให้ตัวหนังสือสีเหลืองเดิม เปล่งแสงออร่าสีเหลืองทองออกมา */
+    text-shadow: 
+        1px 1px 2px rgba(0,0,0,0.5), /* เงาเข้มตัดพื้นหลัง */
+        0 0 8px #fbf304,             /* แสงเรืองสีเหลืองชั้นใน */
+        0 0 15px #f59e0b;            /* แสงเรืองสีส้มทองชั้นนอก */
+}
 
         p.subtitle {
-            color: #ecf805;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
+            font-size: 18px;
+            font-weight: bold;
+            color: #f5f105; /* สีเนื้ออักษรด้านใน */
+            /* เอฟเฟกต์เปล่งแสงสีฟ้า (ปรับโค้ดสีตามใจชอบ) */
+            text-shadow: 
+                0 0 7px #3b82f6,    /* ชั้นในสุด */
+                0 0 15px #3b82f6,   /* ชั้นกลาง */
+                0 0 30px #e9eaf0;   /* ชั้นนอกสุด */
+}
         .container {
             background-image: url('img/background2.png');
             padding: 20px;
