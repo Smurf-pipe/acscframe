@@ -26,9 +26,20 @@
         }
 
         .header-logo {
-            height: 80px;
-            width: auto;
+            height: 100px;
+            width: 100px; /* บังคับความกว้างให้เท่าความสูงเพื่อให้เป็นสี่เหลี่ยมจัตุรัสก่อน */
             object-fit: contain;
+            
+            /* 1. ทำให้เป็นวงกลมและไร้ขอบ */
+            border-radius: 50%;
+            border: none;
+            
+            /* 2. สร้างสีเปล่งแสงจากจุดศูนย์กลาง (Radial Gradient) 
+               * ตรงกลางสุดเป็นสีขาว (สว่างสุด) -> กระจายออกเป็นสีเหลืองทอง -> กลืนหายไปกับพื้นหลัง */
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, rgba(251, 243, 4, 0.6) 45%, transparent 75%);
+            
+            /* 3. เพิ่มรัศมีแสงฟุ้งกระจายออกไปนอกวงกลมอีกชั้น */
+            box-shadow: 0 0 40px 8px rgba(251, 243, 4, 0.3);
         }
 
         .logo-header-container h1 {
@@ -51,14 +62,19 @@
 
         h1 {
             color: #fbf304;
+            background-color: #3012f3b0;
             font-size: 24px;
+            /* --- แก้ไขเพื่อใส่กรอบและทำขอบลบมุม --- */
+            border: 4px solid #4f46e5; /* กำหนดกรอบสีน้ำเงิน */
+            border-radius: 12px; /* กำหนดขอบลบมุม */
+            padding: 8px 15px; /* เพิ่มช่องว่างภายในเพื่อให้สวยงาม */
         }
 
         p.subtitle {
             color: #ecf805;
             margin-top: 0;
             margin-bottom: 20px;
-            font-size: 14px;
+            font-size: 15px;
         }
 
         .container {
