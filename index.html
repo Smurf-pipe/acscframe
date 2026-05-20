@@ -246,7 +246,7 @@
         .slider-control {
             display: flex;
             align-items: center;
-            margin-bottom: 12px; /* เพิ่มระยะห่างระหว่างสไลเดอร์ */
+            margin-bottom: 12px; 
             gap: 15px;
             padding: 5px 0;
         }
@@ -338,7 +338,7 @@
             font-size: 15px;
         }
 
-        /* --- Action Sheet Overlay สำหรับ Mobile & Tablet --- */
+        /* --- Action Sheet Overlay สำหรับเมนูตัวเลือกพร้อมไอคอนรูปที่ 2 --- */
         .action-sheet-overlay {
             display: none;
             position: fixed;
@@ -519,7 +519,7 @@
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
         const zoomSlider = document.getElementById('zoomSlider');
-        const rotateSlider = document.getElementById('rotateSlider'); // ตัวแปรสำหรับสไลเดอร์หมุน
+        const rotateSlider = document.getElementById('rotateSlider'); 
         const previewOverlay = document.getElementById('previewOverlay');
         const mobilePreviewImg = document.getElementById('mobilePreviewImg');
 
@@ -529,7 +529,7 @@
         let imgScale = 1;
         let imgOffsetX = 0;
         let imgOffsetY = 0;
-        let imgAngle = 0; // ตัวแปรเก็บค่ามุมการหมุน
+        let imgAngle = 0; 
         let currentBlobUrl = null;
         let isDragging = false;
         let startX = 0, startY = 0;
@@ -565,16 +565,8 @@
             };
         }
 
+        // เปิดเมนูไอคอน (รูปที่ 2) รองรับทั้ง iOS และ Android
         function openActionSheet() {
-            // ตรวจสอบว่าเป็นระบบปฏิบัติการ iOS (iPhone/iPad/iPod) หรือไม่
-            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-            if (isIOS) {
-                // หากเป็น iOS ให้เปิดเมนูเลือกรูปภาพของระบบโดยตรงทันที เพื่อให้ขึ้นมาครั้งเดียว
-                document.getElementById('galleryInput').click();
-                return;
-            }
-
-            // ระบบอื่น ๆ (Android) ทำงานตามปกติ
             const overlay = document.getElementById('actionSheetOverlay');
             const sheet = document.getElementById('actionSheet');
             overlay.style.display = 'flex';
@@ -597,11 +589,10 @@
             }, 300);
         }
 
+        // แก้ไขส่วนสำคัญ: สั่งเปิดตัวเลือกรูปทันทีแบบ Synchronous เพื่อให้ iOS ทำงานได้เสถียร ไม่ซ้ำซ้อน
         function triggerInput(id) {
+            document.getElementById(id).click();
             closeActionSheet();
-            setTimeout(() => {
-                document.getElementById(id).click();
-            }, 350);
         }
 
         document.getElementById('galleryInput').addEventListener('change', handleImage, false);
@@ -615,19 +606,18 @@
                     hasUserImage = true;
                     let baseScale = Math.max(canvas.width / userImage.width, canvas.height / userImage.height);
                     
-                    // ปรับให้ค่า baseScale อยู่ตรงกลางของ min และ max พอดี
-                    let zoomRange = baseScale * 0.8; // กำหนดระยะเผื่อซูมเข้า-ออก (+- 80%)
+                    let zoomRange = baseScale * 0.8; 
                     zoomSlider.min = (baseScale - zoomRange).toFixed(4);
                     zoomSlider.max = (baseScale + zoomRange).toFixed(4);
                     zoomSlider.step = "0.01";
-                    zoomSlider.value = baseScale; // ค่าเริ่มต้นจะอยู่ตรงกลางสไลเดอร์ทันที
+                    zoomSlider.value = baseScale; 
                     
                     imgScale = baseScale;
                     imgOffsetX = 0; 
                     imgOffsetY = 0;
                     imgAngle = 0;
                     
-                    rotateSlider.value = 0; // ตั้งค่าเริ่มต้นให้สไลเดอร์หมุนภาพอยู่ตรงกลาง
+                    rotateSlider.value = 0; 
                     
                     zoomSlider.disabled = false;
                     rotateSlider.disabled = false;
@@ -650,29 +640,23 @@
                 let cx = (canvas.width / 2) + imgOffsetX;
                 let cy = (canvas.height / 2) + imgOffsetY;
 
-                ctx.save(); // บันทึกสถานะเริ่มต้นของ Canvas
+                ctx.save(); 
                 
-                // ย้ายจุดหมุนไปที่กึ่งกลางของภาพ (ที่ถูกเลื่อนด้วย imgOffsetX, imgOffsetY แล้ว)
                 ctx.translate(cx, cy);
-                // สั่งหมุนตามองศาที่ดึงมาจาก Slider
                 ctx.rotate(imgAngle * Math.PI / 180);
-                // วาดรูปลงไป (ต้องชดเชยแกน X, Y กลับไปครึ่งนึงเพื่อให้ภาพอยู่ตรงกลางจุดหมุน)
                 ctx.drawImage(userImage, -baseWidth / 2, -baseHeight / 2, baseWidth, baseHeight);
                 
-                ctx.restore(); // คืนค่าสถานะเริ่มต้น เพื่อไม่ให้กระทบการวาดกรอบรูปด้านล่าง
+                ctx.restore(); 
             }
 
-            // วาดกรอบรูปทับลงไป
             ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
         }
 
-        // Event สำหรับสไลเดอร์ซูม
         zoomSlider.addEventListener('input', function() {
             imgScale = parseFloat(this.value);
             renderCombinedImage();
         });
 
-        // Event สำหรับสไลเดอร์หมุน
         rotateSlider.addEventListener('input', function() {
             imgAngle = parseFloat(this.value);
             renderCombinedImage();
