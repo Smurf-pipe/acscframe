@@ -171,11 +171,6 @@
             cursor: not-allowed;
         }
 
-        .btn-group {
-            display: flex;
-            gap: 10px;
-        }
-
         input[type="file"] {
             display: none;
         }
@@ -259,11 +254,11 @@
     <div class="container">
         <div class="logo-header-container">
             <img src="img/Star.png" alt="ACSC Logo" class="header-logo"> 
-            <h1>ACSC Picture Frame Styles</h1>                            
+            <h1>ACSC Picture Frame Styles</h1>                                    
         </div>
         
         <p class="subtitle">เลือกกรอบ อัพโหลดรูป และปรับขนาดได้ตามใจชอบ</p>
-        <label class="upload-label">1. เลือกสไตล์กรอบรูป</label>
+        <label for="imageLoader" class="upload-label">1. เลือกสไตล์กรอบรูป</label>
         <div class="frame-selector">
             <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
             <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
@@ -274,13 +269,8 @@
         </div>
 
         <div class="control-group">
-            <label class="upload-label" style="background-color: #f59e0b;">2. เลือกรูปภาพของคุณ</label>
-            <div class="btn-group">
-                <button type="button" class="btn" onclick="document.getElementById('galleryInput').click()">เลือกจากคลังภาพ</button>
-                <button type="button" class="btn" onclick="document.getElementById('cameraInput').click()">ถ่ายจากกล้อง</button>
-            </div>
-            <input type="file" id="galleryInput" accept="image/*">
-            <input type="file" id="cameraInput" accept="image/*" capture="environment">
+            <label for="imageLoader" class="upload-label">2. เลือกรูปภาพของคุณ</label>
+            <input type="file" id="imageLoader" accept="image/*">
         </div>
 
         <div class="canvas-container" id="canvasContainer">
@@ -308,6 +298,7 @@
     </div>
 
     <script>
+        const imageLoader = document.getElementById('imageLoader');
         const canvas = document.getElementById('imageCanvas');
         const ctx = canvas.getContext('2d');
         const downloadBtn = document.getElementById('downloadBtn');
@@ -356,9 +347,7 @@
             };
         }
 
-        // ฟังคำสั่งจากทั้ง 2 ปุ่ม
-        document.getElementById('galleryInput').addEventListener('change', handleImage, false);
-        document.getElementById('cameraInput').addEventListener('change', handleImage, false);
+        imageLoader.addEventListener('change', handleImage, false);
 
         function handleImage(e) {
             const reader = new FileReader();
