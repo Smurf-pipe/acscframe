@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <script>
+        (function() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/Android/i.test(ua) && ua.indexOf("Line") > -1) {
+                var currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
+                window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            }
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โรงเรียนเสนาธิการทหารอากาศ</title>
+    <style>
+        .logo-header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            width: 100%;
+        }
+
+        .header-logo {
+            height: 80px;
+            width: 80px; /* บังคับความกว้างให้เท่าความสูงเพื่อให้เป็นสี่เหลี่ยมจัตุรัสก่อน */
+            object-fit: contain;
+            
+            /* 1. ทำให้เป็นวงกลมและไร้ขอบ */
+            border-radius: 50%;
+            border: none;
+            
+            /* 2. สร้างสีเปล่งแสงจากจุดศูนย์กลาง (Radial Gradient) 
+               * ตรงกลางสุดเป็นสีขาว (สว่างสุด) -> กระจายออกเป็นสีเหลืองทอง -> กลืนหายไปกับพื้นหลัง */
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, rgba(251, 243, 4, 0.6) 45%, transparent 75%);
+            
+            /* 3. เพิ่มรัศมีแสงฟุ้งกระจายออกไปนอกวงกลมอีกชั้น */
+            box-shadow: 0 0 20px 8px rgba(251, 243, 4, 0.3);
+        }
+
+        .logo-header-container h1 {
+            margin: 0;
+            display: inline-block;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: whitesmoke;
+            color: #d82839;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 15px;
+        }
+
+        h2 {
+            color: #fbf304;
+            background-color: #3012f3b0;
+            font-size: 24px;
+            /* --- แก้ไขเพื่อใส่กรอบและทำขอบลบมุม --- */
+            border: 4px solid #4f46e5; /* กำหนดกรอบสีน้ำเงิน */
+            border-radius: 12px; /* กำหนดขอบลบมุม */
+            padding: 8px 15px; /* เพิ่มช่องว่างภายในเพื่อให้สวยงาม */
+        }
+        
+        .container {
+            background-image: url('img/background2.png');
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .frame-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 0 auto 20px auto;
+            max-width: 100%;
+            justify-items: center;
+        }
+
+        @media (min-width: 450px) {
+            .frame-selector {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 15px;
+                max-width: 320px;
+            }
+        }
+
+        .frame-option {
+            width: 100%;
+            max-width: 100px;
+            aspect-ratio: 1 / 1;
+            border: 3px solid #cbd5e1;
+            border-radius: 10px;
+            cursor: pointer;
+            padding: 2px;
+            transition: all 0.2s;
+            background-color: #f8fafc;
+            object-fit: contain;
+            box-sizing: border-box;
+        }
+
+        .frame-option:hover {
+            border-color: #0ea5e9;
+        }
+
+        .frame-option.active {
+            border-color: #4f46e5;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+        }
+
+        .sliders-box {
+            background: #bbd5ee;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .slider-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0;
+            gap: 15px;
+            padding: 5px 0;
+        }
+
+        .slider-control label {
+            width: 110px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1e05c0;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .slider-control input[type="range"] {
+            flex: 1;
+            cursor: pointer;
+            min-width: 5px;
+        }
+
+        .btn {
+            background-color: #4f46e5;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+            width: 100%;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:hover {
+            background-color: #4338ca;
+        }
+
+        .btn:disabled {
+            background-color: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        .upload-label {
+            display: inline-block;
+            background-color: #0ea5e9;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-bottom: 15px;
+            transition: background 0.2s;
+            width: 80%;
+            box-sizing: border-box;
+        }
+
+        .canvas-container {
+            margin: 20px auto;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 100%;
+            aspect-ratio: 1 / 1;
+            cursor: move;
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        .mobile-preview-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .mobile-preview-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            max-width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+        }
+
+        .mobile-preview-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .mobile-preview-box p {
+            margin: 10px 0;
+            font-weight: bold;
+            color: #e11d48;
+            font-size: 15px;
+        }
+
+        /* --- สไตล์สำหรับ Action Sheet (เลียนแบบหน้าต่างของรูปแรก) --- */
+        .action-sheet-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 2000;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 15px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .action-sheet-overlay.fade-in {
+            opacity: 1;
+        }
+        .action-sheet {
+            width: 100%;
+            max-width: 400px;
+            transform: translateY(150%);
+            transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+            padding-bottom: env(safe-area-inset-bottom, 10px);
+        }
+        .action-sheet.show {
+            transform: translateY(0);
+        }
+        .action-menu {
+            background-color: rgba(245, 245, 245, 0.98);
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        .action-btn {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 18px 20px;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 18px;
+            color: #000;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .action-btn:last-child {
+            border-bottom: none;
+        }
+        .action-btn:active {
+            background-color: rgba(0,0,0,0.1);
+        }
+        .action-btn span {
+            text-align: left;
+            flex: 1;
+        }
+        .cancel-btn {
+            width: 100%;
+            padding: 18px;
+            background-color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 18px;
+            color: #007aff;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .cancel-btn:active {
+            background-color: rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-header-container">
+            <img src="img/Star.png" alt="ACSC Logo" class="header-logo"> 
+            <h2>ACSC FRAME STYLE</h2>                                    
+        </div>
+        
+        <label class="upload-label" style="cursor: default;">1. เลือกสไตล์กรอบรูป</label>
+        <div class="frame-selector">
+            <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
+            <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
+            <img src="img/frame3.png" class="frame-option" onclick="changeFrame('img/frame3.png', this)" alt="กรอบที่ 3">
+            <img src="img/frame4.png" class="frame-option" onclick="changeFrame('img/frame4.png', this)" alt="กรอบที่ 4">
+            <img src="img/frame5.png" class="frame-option" onclick="changeFrame('img/frame5.png', this)" alt="กรอบที่ 5">
+            <img src="img/frame6.png" class="frame-option" onclick="changeFrame('img/frame6.png', this)" alt="กรอบที่ 6">
+        </div>
+
+        <div class="control-group">
+            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none;" onclick="openActionSheet()">2. เลือกรูปภาพของคุณ</button>
+            
+            <input type="file" id="galleryInput" accept="image/*" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="imageCanvas" width="800" height="800"></canvas>
+        </div>
+
+        <div class="sliders-box">
+            <div class="slider-control">
+                <label>🔍 ซูมรูปภาพ:</label>
+                <input type="range" id="zoomSlider" value="1" disabled>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <button id="downloadBtn" class="btn" disabled>บันทึกรูปภาพที่แต่งเสร็จแล้ว</button>
+        </div>
+    </div>
+
+    <div id="actionSheetOverlay" class="action-sheet-overlay" onclick="closeActionSheet(event)">
+        <div id="actionSheet" class="action-sheet" onclick="event.stopPropagation()">
+            <div class="action-menu">
+                <button class="action-btn" onclick="triggerInput('galleryInput')">
+                    <span>คลังรูปภาพ</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
+                <button class="action-btn" onclick="triggerInput('cameraInput')">
+                    <span>ถ่ายภาพ</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                </button>
+                <button class="action-btn" onclick="triggerInput('galleryInput')">
+                    <span>เลือกไฟล์</span>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                </button>
+            </div>
+            <button class="cancel-btn" onclick="closeActionSheet(event)">ยกเลิก</button>
+        </div>
+    </div>
+
+    <div id="previewOverlay" class="mobile-preview-overlay">
+        <div class="mobile-preview-box">
+            <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
+            <img id="mobilePreviewImg" src="" alt="Framed Preview">
+            <button class="btn" style="background-color: #64748b; margin-top: 15px;" onclick="closePreview()">กลับไปแก้ไข</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('imageCanvas');
+        const ctx = canvas.getContext('2d');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const zoomSlider = document.getElementById('zoomSlider');
+        const previewOverlay = document.getElementById('previewOverlay');
+        const mobilePreviewImg = document.getElementById('mobilePreviewImg');
+
+        let userImage = new Image();
+        let frameImage = new Image();
+        let hasUserImage = false;
+        let imgScale = 1;
+        let imgOffsetX = 0;
+        let imgOffsetY = 0;
+        let currentBlobUrl = null;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+
+        frameImage.crossOrigin = "anonymous";
+        frameImage.src = 'img/frame1.png'; 
+        frameImage.onload = function() { drawCanvasPlaceholder(); };
+
+        function drawCanvasPlaceholder() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#e2e8f0";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            if (hasUserImage) {
+                renderCombinedImage();
+            } else {
+                ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#64748b";
+                ctx.font = "30px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText("กรุณาเลือกรูปภาพของคุณในขั้นตอนที่ 2", canvas.width / 2, canvas.height / 2 + 10);
+            }
+        }
+
+        function changeFrame(frameSrc, element) {
+            frameImage.crossOrigin = "anonymous";
+            frameImage.src = frameSrc;
+            document.querySelectorAll('.frame-option').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            frameImage.onload = function() {
+                if(hasUserImage) renderCombinedImage();
+                else drawCanvasPlaceholder();
+            };
+        }
+
+        // --- ระบบเปิด-ปิด Action Sheet ---
+        function openActionSheet() {
+            const overlay = document.getElementById('actionSheetOverlay');
+            const sheet = document.getElementById('actionSheet');
+            overlay.style.display = 'flex';
+            requestAnimationFrame(() => {
+                overlay.classList.add('fade-in');
+                sheet.classList.add('show');
+            });
+        }
+
+        function closeActionSheet(e) {
+            if(e) e.preventDefault();
+            const overlay = document.getElementById('actionSheetOverlay');
+            const sheet = document.getElementById('actionSheet');
+            
+            sheet.classList.remove('show');
+            overlay.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                overlay.style.display = 'none';
+            }, 300);
+        }
+
+        function triggerInput(id) {
+            closeActionSheet();
+            setTimeout(() => {
+                document.getElementById(id).click();
+            }, 350); // รอให้หน้าต่างปิดสนิทก่อนค่อยเปิดกล้อง/คลัง
+        }
+
+        // ผูก Event ให้ทำงานเมื่อผู้ใช้เลือกรูป
+        document.getElementById('galleryInput').addEventListener('change', handleImage, false);
+        document.getElementById('cameraInput').addEventListener('change', handleImage, false);
+
+        function handleImage(e) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                userImage.crossOrigin = "anonymous";
+                userImage.onload = function() {
+                    hasUserImage = true;
+                    let baseScale = Math.max(canvas.width / userImage.width, canvas.height / userImage.height);
+                    zoomSlider.min = (baseScale * 0.6).toFixed(2);
+                    zoomSlider.max = (baseScale * 4.0).toFixed(2);
+                    zoomSlider.step = "0.01";
+                    zoomSlider.value = baseScale;
+                    imgScale = baseScale;
+                    imgOffsetX = 0; imgOffsetY = 0;
+                    zoomSlider.disabled = false;
+                    downloadBtn.disabled = false;
+                    renderCombinedImage();
+                }
+                userImage.src = event.target.result;
+            }
+            if(e.target.files[0]) reader.readAsDataURL(e.target.files[0]);
+            
+            // เคลียร์ค่า input เผื่อต้องการเลือกรูปเดิมซ้ำ
+            e.target.value = ''; 
+        }
+
+        function renderCombinedImage() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let baseWidth = userImage.width * imgScale;
+            let baseHeight = userImage.height * imgScale;
+            let x = (canvas.width / 2) - (baseWidth / 2) + imgOffsetX;
+            let y = (canvas.height / 2) - (baseHeight / 2) + imgOffsetY;
+            ctx.drawImage(userImage, x, y, baseWidth, baseHeight);
+            ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+        }
+
+        zoomSlider.addEventListener('input', function() {
+            imgScale = parseFloat(this.value);
+            renderCombinedImage();
+        });
+
+        function getMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function startDrag(e) {
+            if (!hasUserImage) return;
+            isDragging = true;
+            const pos = getMousePos(e);
+            startX = pos.x - imgOffsetX;
+            startY = pos.y - imgOffsetY;
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function dragMove(e) {
+            if (!isDragging || !hasUserImage) return;
+            const pos = getMousePos(e);
+            imgOffsetX = pos.x - startX;
+            imgOffsetY = pos.y - startY;
+            renderCombinedImage();
+            if(e.cancelable) e.preventDefault();
+        }
+
+        function stopDrag() { isDragging = false; }
+
+        canvas.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('mouseup', stopDrag);
+        canvas.addEventListener('touchstart', startDrag, { passive: false });
+        canvas.addEventListener('touchmove', dragMove, { passive: false });
+        canvas.addEventListener('touchend', stopDrag);
+
+        downloadBtn.addEventListener('click', function() {
+            try {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                if (isMobile) {
+                    const base64Image = canvas.toDataURL('image/png');
+                    mobilePreviewImg.src = base64Image;
+                    previewOverlay.style.display = 'flex';
+                } else {
+                    canvas.toBlob(function(blob) {
+                        if (!blob) return;
+                        if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+                        currentBlobUrl = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.download = 'custom-framed-image.png';
+                        link.href = currentBlobUrl;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                    }, 'image/png');
+                }
+            } catch (error) {
+                console.error(error);
+                alert("เกิดข้อผิดพลาด กรุณาลองแคปหน้าจอแทนนะครับ");
+            }
+        });
+
+        function closePreview() { previewOverlay.style.display = 'none'; }
+    </script>
+</body>
+</html>
