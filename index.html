@@ -338,7 +338,7 @@
             font-size: 15px;
         }
 
-        /* --- Action Sheet Overlay สำหรับเมนูตัวเลือกพร้อมไอคอนรูปที่ 2 --- */
+        /* --- Action Sheet Overlay --- */
         .action-sheet-overlay {
             display: none;
             position: fixed;
@@ -460,7 +460,7 @@
         </div>
 
         <div class="control-group">
-            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none; margin-bottom: 0;" onclick="openActionSheet()"> 🎞️ เลือกรูปภาพของคุณ</button>
+            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none; margin-bottom: 0;" onclick="handleUploadButtonClick()"> 🎞️ เลือกรูปภาพของคุณ</button>
             
             <input type="file" id="galleryInput" accept="image/*" style="display: none;">
             <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
@@ -565,7 +565,19 @@
             };
         }
 
-        // เปิดเมนูไอคอน (รูปที่ 2) รองรับทั้ง iOS และ Android
+        // ฟังก์ชันคัดกรองระบบปฏิบัติการตอนกดปุ่มอัปโหลดรูปภาพ
+        function handleUploadButtonClick() {
+            const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+            if (isIOS) {
+                // สำหรับ iOS: สั่งคลิก input ตรงๆ โดยไม่เปิด Action Sheet ของโค้ด
+                // ซึ่งระบบ iOS จะเปิดหน้าต่างเลือกที่มีไอคอนสวยงาม (รูปที่ 2) ขึ้นมาให้ทันที 1 รอบถ้วนอย่างสมบูรณ์แบบ
+                document.getElementById('galleryInput').click();
+            } else {
+                // สำหรับ Android และระบบอื่นๆ: เปิดเมนู Action Sheet ที่สร้างขึ้นมาตามปกติ
+                openActionSheet();
+            }
+        }
+
         function openActionSheet() {
             const overlay = document.getElementById('actionSheetOverlay');
             const sheet = document.getElementById('actionSheet');
@@ -589,7 +601,6 @@
             }, 300);
         }
 
-        // แก้ไขส่วนสำคัญ: สั่งเปิดตัวเลือกรูปทันทีแบบ Synchronous เพื่อให้ iOS ทำงานได้เสถียร ไม่ซ้ำซ้อน
         function triggerInput(id) {
             document.getElementById(id).click();
             closeActionSheet();
