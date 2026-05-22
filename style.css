@@ -1,0 +1,428 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: whitesmoke;
+    color: #d82839;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 10px;
+}
+
+/* --- Container รองรับทุกหน้าจออย่างสมบูรณ์ --- */
+.container {
+    background-image: url('img/background2.png');
+    background-size: cover;
+    background-position: center;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    text-align: center;
+    width: 100%;
+    max-width: 550px; 
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    body {
+        padding: 30px 15px;
+    }
+    .container {
+        max-width: 650px;
+        padding: 30px;
+    }
+}
+
+/* --- Header & Logo ปรับขนาด Responsive ตามหน้าจอ --- */
+.logo-header-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+    flex-wrap: wrap; 
+}
+
+.header-logo {
+    height: 65px;
+    width: 65px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 10%, rgba(251, 243, 4, 0.6) 45%, transparent 75%);
+    box-shadow: 0 0 20px 8px rgba(251, 243, 4, 0.3);
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+}
+
+.logo-header-container h1 {
+    margin: 0;
+    display: inline-block;
+    color: #fbf304;
+    font-size: 18px; 
+    background-color: rgba(48, 18, 243, 0.7);
+    border: 3px solid #4f46e5;
+    border-radius: 12px;
+    padding: 8px 12px;
+    text-shadow: 
+        1px 1px 2px rgba(0,0,0,0.5), 
+        0 0 8px #fbf304,             
+        0 0 15px #f59e0b;            
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 480px) {
+    .header-logo {
+        height: 80px;
+        width: 80px;
+    }
+    .logo-header-container h1 {
+        font-size: 22px;
+        padding: 8px 15px;
+    }
+}
+
+@media (min-width: 768px) {
+    .header-logo {
+        height: 90px;
+        width: 90px;
+    }
+    .logo-header-container h1 {
+        font-size: 26px;
+        padding: 10px 20px;
+    }
+}
+
+p.subtitle {
+    font-size: 16px;
+    font-weight: bold;
+    color: #f5f105;
+    text-shadow: 
+        0 0 7px #3b82f6,    
+        0 0 15px #3b82f6,   
+        0 0 30px #e9eaf0;   
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+    p.subtitle {
+        font-size: 20px;
+    }
+}
+
+.upload-label {
+    display: inline-block;
+    background-color: #f2f8fcbd;
+    color: rgb(58, 5, 250);
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 15px;
+    transition: background 0.2s;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* --- Frame Selector จัดระเบียบ Grid --- */
+.frame-selector {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 auto 20px auto;
+    width: 100%;
+    max-width: 340px;
+    justify-items: center;
+}
+
+@media (min-width: 768px) {
+    .frame-selector {
+        gap: 15px;
+        max-width: 420px;
+    }
+}
+
+.frame-option {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 3px solid #cbd5e1;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 2px;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+    object-fit: contain;
+}
+
+.frame-option:hover {
+    border-color: #0ea5e9;
+}
+
+.frame-option.active {
+    border-color: #4f46e5;
+    box-shadow: 0 0 10px rgba(79, 70, 229, 0.3);
+}
+
+.control-group {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* --- Canvas Container ยืดหยุ่น 100% --- */
+.canvas-container {
+    margin: 20px auto;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 400px; 
+    aspect-ratio: 1 / 1;
+    cursor: move;
+    transition: max-width 0.3s ease;
+}
+
+@media (min-width: 768px) {
+    .canvas-container {
+        max-width: 480px; 
+    }
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+
+/* --- Sliders Box --- */
+.sliders-box {
+    background: #bbd5ee;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 0 auto 20px auto;
+    text-align: left;
+    width: 100%;
+    max-width: 400px;
+}
+
+@media (min-width: 768px) {
+    .sliders-box {
+        max-width: 480px;
+        padding: 18px;
+    }
+}
+
+.slider-control {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px; 
+    gap: 15px;
+    padding: 5px 0;
+}
+
+.slider-control:last-child {
+    margin-bottom: 0;
+}
+
+.slider-control label {
+    width: 100px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #1805c0;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+}
+
+.slider-control input[type="range"] {
+    flex: 1;
+    cursor: pointer;
+    min-width: 5px;
+    height: 8px;
+}
+
+/* --- Buttons --- */
+.btn {
+    background-color: #d4d2f1d7;
+    color: rgb(231, 84, 84);
+    padding: 14px 25px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s;
+    width: 100%;
+    max-width: 400px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+    background-color: #4338ca;
+}
+
+.btn:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+}
+
+/* --- Mobile Preview Overlay --- */
+.mobile-preview-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.mobile-preview-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    max-width: 90%;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+}
+
+.mobile-preview-box img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.mobile-preview-box p {
+    margin: 10px 0;
+    font-weight: bold;
+    color: #e11d48;
+    font-size: 15px;
+}
+
+/* --- Action Sheet Overlay --- */
+.action-sheet-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2000;
+    justify-content: center;
+    align-items: flex-end; 
+    padding: 15px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.action-sheet-overlay.fade-in {
+    opacity: 1;
+}
+
+.action-sheet {
+    width: 100%;
+    max-width: 400px;
+    transform: translateY(150%);
+    transition: transform 0.3s cubic-bezier(0.1, 0.9, 0.2, 1);
+    padding-bottom: env(safe-area-inset-bottom, 10px);
+}
+
+@media (min-width: 576px) {
+    .action-sheet-overlay {
+        align-items: center; 
+    }
+    .action-sheet {
+        transform: scale(0.8) translateY(0);
+        transition: transform 0.2s ease;
+    }
+    .action-sheet.show {
+        transform: scale(1) translateY(0);
+    }
+}
+
+.action-sheet.show {
+    transform: translateY(0);
+}
+
+.action-menu {
+    background-color: rgba(245, 245, 245, 0.98);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.action-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 16px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    color: #000;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.action-btn:last-child {
+    border-bottom: none;
+}
+
+.action-btn:active {
+    background-color: rgba(0,0,0,0.1);
+}
+
+.action-btn span {
+    text-align: left;
+    flex: 1;
+}
+
+/* จัดสไตล์ไอคอน GIF ในหน้าเมนู */
+.action-icon-gif {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    margin-left: 10px;
+    flex-shrink: 0;
+}
+
+.cancel-btn {
+    width: 100%;
+    padding: 18px;
+    background-color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 18px;
+    color: #007aff;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.cancel-btn:active {
+    background-color: rgba(0,0,0,0.1);
+}
