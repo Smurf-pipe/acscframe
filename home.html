@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <script>
+        (function() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            if (/Android/i.test(ua) && ua.indexOf("Line") > -1) {
+                var currentUrl = window.location.href.replace(/http(s)?:\/\//, "");
+                window.location.href = "intent://" + currentUrl + "#Intent;scheme=https;package=com.android.chrome;end";
+            }
+        })();
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📷โปรแกรมแต่งกรอบรูปอัจฉริยะ</title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="logo-header-container">
+            <img src="img/Star.png" alt="ACSC Logo" class="header-logo"> 
+            <h1>ACSC Frame Styles</h1>                                    
+        </div>
+        
+        <p class="subtitle">โรงเรียนเสนาธิการทหารอากาศ</p>
+        
+        <div class="control-group">
+            <label class="upload-label" style="cursor: default; margin-bottom: 0;">🖼️ เลือกสไตล์กรอบรูป </label>
+        </div>
+        
+        <div class="frame-selector">
+            <img src="img/frame1.png" class="frame-option active" onclick="changeFrame('img/frame1.png', this)" alt="กรอบที่ 1">
+            <img src="img/frame2.png" class="frame-option" onclick="changeFrame('img/frame2.png', this)" alt="กรอบที่ 2">
+            <img src="img/frame3.png" class="frame-option" onclick="changeFrame('img/frame3.png', this)" alt="กรอบที่ 3">
+            <img src="img/frame4.png" class="frame-option" onclick="changeFrame('img/frame4.png', this)" alt="กรอบที่ 4">
+            <img src="img/frame5.png" class="frame-option" onclick="changeFrame('img/frame5.png', this)" alt="กรอบที่ 5">
+            <img src="img/frame6.png" class="frame-option" onclick="changeFrame('img/frame6.png', this)" alt="กรอบที่ 6">
+        </div>
+
+        <div class="control-group">
+            <button type="button" class="upload-label" style="border:none; font-family:inherit; font-size:16px; outline:none; margin-bottom: 0;" onclick="handleUploadButtonClick()"> 🎞️ เลือกรูปภาพของคุณ</button>
+            
+            <input type="file" id="galleryInput" accept="image/*" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        </div>
+
+        <div class="canvas-container" id="canvasContainer">
+            <canvas id="imageCanvas" width="800" height="800"></canvas>
+        </div>
+
+        <div class="sliders-box">
+            <div class="slider-control">
+                <label>🔍 ซูมรูปภาพ:</label>
+                <input type="range" id="zoomSlider" value="1" disabled>
+            </div>
+            <div class="slider-control">
+                <label>🔄 หมุนภาพ:</label>
+                <input type="range" id="rotateSlider" min="-180" max="180" value="0" disabled>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <button id="downloadBtn" class="btn" disabled>💾 บันทึกรูปภาพ</button>
+        </div>
+    </div>
+
+    <div id="actionSheetOverlay" class="action-sheet-overlay" onclick="closeActionSheet(event)">
+        <div id="actionSheet" class="action-sheet" onclick="event.stopPropagation()">
+            <div class="action-menu">
+                <button class="action-btn" onclick="triggerInput('galleryInput')">
+                    <span>🖼️ คลังรูปภาพ</span>
+                    <img src="img/gallery-icon.gif" class="action-icon-gif" alt="Gallery">
+                </button>
+                <button class="action-btn" onclick="triggerInput('cameraInput')">
+                    <span>📷 ถ่ายภาพ</span>
+                    <img src="img/camera-icon.gif" class="action-icon-gif" alt="Camera">
+                </button>
+                <button class="action-btn" onclick="triggerInput('galleryInput')">
+                    <span>📁 เลือกไฟล์</span>
+                    <img src="img/file-icon.gif" class="action-icon-gif" alt="File">
+                </button>
+            </div>
+            <button class="cancel-btn" onclick="closeActionSheet(event)">ยกเลิก</button>
+        </div>
+    </div>
+
+    <div id="previewOverlay" class="mobile-preview-overlay">
+        <div class="mobile-preview-box">
+            <p>👇 กดค้างที่รูปภาพ เพื่อบันทึก 👇</p>
+            <img id="mobilePreviewImg" src="" alt="Framed Preview">
+            <button class="btn" style="background-color: #64748ba1; margin-top: 15px;" onclick="closePreview()">⚙️ กลับไปแก้ไข</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
